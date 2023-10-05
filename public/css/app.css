@@ -1,0 +1,29 @@
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(50, 10px);  // 50x50 = 2500 
+    grid-template-rows: repeat(50, 10px);
+    gap: 1px;
+    width: 500px; 
+    height: 500px;
+    position: relative;
+    background: url('/img/island.png') no-repeat center center;
+    background-size: cover;  // Make sure the image covers the entire grid.
+}
+
+.grid-item {
+    width: 100%;
+    height: 100%;
+    border: 1px solid #ddd;
+    background-color: rgba(255,255,255,0.5);  // semi-transparent white to show the island image behind
+    transition: background-color 0.3s;
+
+    &:hover {
+        background-color: rgba(238,238,238,0.5);
+        cursor: pointer;
+    }
+
+    &.clicked {
+        background-color: rgba(204,204,204,0.5);
+        pointer-events: none;  // Makes the grid box unclickable
+    }
+}
