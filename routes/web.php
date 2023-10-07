@@ -2,19 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GameController;
+use App\Http\Controllers\AuthController;  // Import the AuthController
 
 Route::get('/', [GameController::class, 'index']);
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
-Route::get('/game', 'GameController@index');
-Route::post('/checkGrid', 'GameController@checkGrid');
+Route::get('/game', [GameController::class, 'index']);
+Route::post('/checkGrid', [GameController::class, 'checkGrid']);
 
+// Use the array syntax for AuthController routes
+Route::get('login/twitter', [AuthController::class, 'redirectToTwitter'])->name('login.twitter');
+Route::get('login/twitter/callback', [AuthController::class, 'handleTwitterCallback']);

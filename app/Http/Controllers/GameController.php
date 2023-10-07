@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Grid; // Assuming you've set up a model for Grid
+use Illuminate\Support\Facades\Auth;
+
 
 class GameController extends Controller
 {
@@ -17,12 +19,30 @@ class GameController extends Controller
     {
         $gridId = $request->input('id');
         $grid = Grid::find($gridId);
-
-        if ($grid->reward_item_id) {
-            // You'll want to ensure reward logic is fleshed out.
-            return response()->json(['message' => 'Congratulations! You found a reward!']);
-        } else {
-            return response()->json(['message' => 'Try next time.']);
+        
+        if (!$grid->user_id) { // Check if the grid is not already clicked by another user
+            $grid->user_id = Auth::id(); // Set the user_id to the currently authenticated user's ID
+            $grid->save();
         }
+        
+        if (!$grid) {
+            return response()->json(['message' => 'Invalid grid.']);
+        }
+    
+        if ($grid->clicked) {
+            return response()->json(['message' => 'Grid already clicked.']);
+        }
+    
+        $grid->clicked = true;
+        $grid->user_id = Auth::id();
+        $grid->save();
+        
+        if ($grid->reward_item_id) {
+            // You can customize this to return the actual reward title or any other details.
+            return response()->json(['message' => 'Congratulations! You found a reward!']);
+        }
+    
+        return response()->json(['message' => 'Try next time']);
     }
+
 }
