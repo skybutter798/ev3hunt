@@ -14,42 +14,42 @@ class GameController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
-
-        // Check how many grids the user has clicked today
-        $todayClicks = DB::table('grids')
-                     ->where('user_id', $user->id)
-                     ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
-                     ->count();
-
+        $remainingClicks = 0; // Default value
     
-        $remainingClicks = 2 - $todayClicks;
+        if (Auth::check()) {
+            $user = Auth::user();
+    
+            // Check how many grids the user has clicked today
+            $todayClicks = DB::table('grids')
+                         ->where('user_id', $user->id)
+                         ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
+                         ->count();
+    
+            $remainingClicks = 100 - $todayClicks;
+        }
+    
         $grids = Grid::all();
         return view('grid', compact('grids', 'remainingClicks'));
     }
 
+
     public function checkGrid(Request $request)
     {
         $user = Auth::user();
-
+    
         // Check how many grids the user has clicked today
         $todayClicks = DB::table('grids')
                      ->where('user_id', $user->id)
                      ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
                      ->count();
     
-        if ($todayClicks >= 2) {
+        if ($todayClicks >= 100) {
             return response()->json(['message' => 'You have reached your click limit for today.']);
         }
-        
+    
         $gridId = $request->input('id');
         $grid = Grid::find($gridId);
-        
-        if (!$grid->user_id) { // Check if the grid is not already clicked by another user
-            $grid->user_id = Auth::id(); // Set the user_id to the currently authenticated user's ID
-            $grid->save();
-        }
-        
+    
         if (!$grid) {
             return response()->json(['message' => 'Invalid grid.']);
         }
@@ -58,10 +58,11 @@ class GameController extends Controller
             return response()->json(['message' => 'Grid already clicked.']);
         }
     
+        // Update the grid's clicked status and user_id
         $grid->clicked = true;
         $grid->user_id = Auth::id();
         $grid->save();
-        
+    
         if ($grid->reward_item_id) {
             // You can customize this to return the actual reward title or any other details.
             return response()->json(['message' => 'Congratulations! You found a reward!']);
@@ -69,6 +70,7 @@ class GameController extends Controller
     
         return response()->json(['message' => 'Try next time']);
     }
+
     
     public function checkForTweet($userId) {
         $user = User::find($userId);
