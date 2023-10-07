@@ -26,9 +26,10 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islandv2.png') no-repeat center center;
+        /*background: url('/img/islandv2.png') no-repeat center center;*/
         background-size: cover;
         background-attachment: local;
+        position: relative;
     }
     
     .grid-item {
@@ -135,19 +136,17 @@
         </div>
     </div>
 
-    <!-- Add this inside your grid-container div -->
-    <img src="/img/boat.png" id="boat" style="display: none; position: absolute;" onclick="boatClicked()">
-
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
-        @foreach ($grids as $grid)
-            {{--<div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}" onclick="checkGrid({{ $grid->id }})">--}}
-            <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
-                @if ($grid->reward_item_id)
-                    🎁  <!-- Display a gift icon for grid items with a reward -->
-                @endif
-            </div>
-        @endforeach
-    </div>
+    <img src="/img/boat.png" id="boat" style="display: none; position: absolute;" onclick="boatClicked()">
+    @foreach ($grids as $grid)
+        <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
+            @if ($grid->reward_item_id)
+                🎁  <!-- Display a gift icon for grid items with a reward -->
+            @endif
+        </div>
+    @endforeach
+</div>
+
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -202,9 +201,14 @@
     let boatInterval;
     let boatPosition = { x: 0, y: 0 }; // Starting position
     
+    // Define the grid dimensions
+    const gridWidth = 50;  // Assuming you have 50 columns
+    const gridHeight = 50; // Assuming you have 50 rows
+    
     function showBoat() {
         // Set the boat's initial position
         boatPosition = { x: Math.floor(Math.random() * gridWidth), y: Math.floor(Math.random() * gridHeight) };
+        console.log("Boat initial position:", boatPosition); // Log the initial position
         updateBoatPosition();
     
         // Start moving the boat
@@ -228,35 +232,60 @@
                 boatPosition.x = Math.min(gridWidth - 1, boatPosition.x + 1);
                 break;
         }
+        console.log("Boat moved to position:", boatPosition); // Log the new position
         updateBoatPosition();
     }
     
     function updateBoatPosition() {
-        // Update the boat's position on the grid
-        // This will depend on how your grid is implemented
+        const boatElement = document.getElementById('boat');
+        const gridSize = 20; // Assuming each grid item is 20px by 20px
+    
+        // Calculate the boat's top and left position based on its x and y values
+        const topPosition = boatPosition.y * gridSize;
+        const leftPosition = boatPosition.x * gridSize;
+    
+        boatElement.style.top = `${topPosition}px`;
+        boatElement.style.left = `${leftPosition}px`;
+        boatElement.style.display = 'block'; // Show the boat
+    
+        console.log("Boat position updated on grid to:", { top: topPosition, left: leftPosition }); // Log the updated position on the grid
     }
     
     function boatClicked() {
         // Determine the outcome when the boat is clicked
         const rewardChance = Math.random();
+        let message = '';
+        let icon = 'info';
+    
         if (rewardChance < 0.5) {
+            message = 'Congratulations! You found a special reward!';
+            icon = 'success';
             // Give a special reward
+            // ... your code to handle the reward ...
         } else {
+            message = 'Sorry, no reward this time.';
+            icon = 'error';
             // No reward
+            // ... your code to handle the absence of a reward ...
         }
     
-        // Remove the boat
+        // Display the popout message
+        Swal.fire({
+            title: 'Boat Clicked!',
+            text: message,
+            icon: icon,
+            confirmButtonText: 'OK'
+        });
+    
+        // Hide the boat
+        const boatElement = document.getElementById('boat');
+        boatElement.style.display = 'none';
+    
+        // Remove the boat's movement
         clearInterval(boatInterval);
     }
-    
-    Swal.fire({
-    // ... other properties
-    customClass: {
-        popup: 'custom-swal'
-    }
-});
 
-
-
+    // Call the showBoat function to start the boat animation
+    showBoat();
 </script>
 @endsection
