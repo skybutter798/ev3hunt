@@ -60,6 +60,12 @@ class AuthController extends Controller
             return $e->getMessage();
         }
     }
+    
+    public function logout() {
+        Auth::logout();
+        return redirect('/');
+    }
+
 
 
 }

@@ -12,3 +12,4 @@ Route::post('/checkGrid', [GameController::class, 'checkGrid']);
 // Use the array syntax for AuthController routes
 Route::get('login/twitter', [AuthController::class, 'redirectToTwitter'])->name('login.twitter');
 Route::get('login/twitter/callback', [AuthController::class, 'handleTwitterCallback']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

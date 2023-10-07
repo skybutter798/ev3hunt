@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
 @section('content')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <style>
     /* Reset default styles and fill the viewport */
@@ -108,16 +110,27 @@
         
         @if(Auth::check())
             <span>Welcome, {{ Auth::user()->name }}</span>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="twitter-login">Logout</button>
+            </form>
         @else
             <a href="{{ route('login.twitter') }}" class="twitter-login">Login with Twitter</a>
         @endif
+        
+        <div id="remainingClicksDiv">
+            You have {{ $remainingClicks }} clicks left for today.
+        </div>
+
+
         
 
     </div>
 
     <div class="grid-container">
         @foreach ($grids as $grid)
-            <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}" onclick="checkGrid({{ $grid->id }})">
+            {{--<div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}" onclick="checkGrid({{ $grid->id }})">--}}
+            <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
                 @if ($grid->reward_item_id)
                     🎁  <!-- Display a gift icon for grid items with a reward -->
                 @endif
@@ -145,7 +158,19 @@
         axios.post('/checkGrid', { id: gridId })
 
         .then(response => {
-            alert(response.data.message);
+            let swalConfig = {
+                title: 'Notification',
+                text: response.data.message,
+                icon: response.data.message === 'You have reached your click limit for today.' ? 'error' : 'success',
+                confirmButtonText: 'OK',
+            };
+
+            if (response.data.message === 'You have reached your click limit for today.') {
+                const twitterShareUrl = `https://twitter.com/intent/tweet?text=Your%20preset%20message%20here&url=https://yourwebsite.com`;
+                swalConfig.footer = `<a href="${twitterShareUrl}" target="_blank" class="btn btn-primary">Share on Twitter</a>`;
+            }
+
+            Swal.fire(swalConfig);
 
             if (response.data.message !== 'Try next time') {
                 gridElement.classList.add('clicked');
@@ -155,6 +180,11 @@
             }
             gridElement.onclick = null; 
         });
+        
+        // Update the remaining clicks count
+        let remainingClicksDiv = document.getElementById('remainingClicksDiv');
+        let currentClicks = parseInt(remainingClicksDiv.textContent.match(/\d+/)[0]);
+        remainingClicksDiv.textContent = `You have ${currentClicks - 1} clicks left for today.`;
     }
 
     window.checkGrid = checkGrid;
