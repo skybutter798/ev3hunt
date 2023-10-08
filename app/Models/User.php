@@ -21,7 +21,7 @@ class User extends Authenticatable
         'password',
     'twitter_id', 'name', 'nickname', 'avatar', 'email', 'profile_banner_url', 
     'location', 'description', 'followers_count', 'friends_count', 
-    'statuses_count', 'created_at_twitter'
+    'statuses_count', 'created_at_twitter', 'wallet_address'
     ];
 
     /**

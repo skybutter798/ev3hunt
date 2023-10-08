@@ -13,3 +13,4 @@ Route::post('/checkGrid', [GameController::class, 'checkGrid']);
 Route::get('login/twitter', [AuthController::class, 'redirectToTwitter'])->name('login.twitter');
 Route::get('login/twitter/callback', [AuthController::class, 'handleTwitterCallback']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/wallet', [GameController::class, 'saveWalletAddress'])->middleware('auth');

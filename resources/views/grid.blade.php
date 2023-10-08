@@ -3,9 +3,13 @@
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EV3 Blue Code">
+<meta name="twitter:description" content="Unleash the Hunt: Secure Your Whitelist Spot Now!">
+<meta name="twitter:image" content="https://hunt.ev3nft.xyz/img/dive.png">
 
 <style>
-    /* Reset default styles and fill the viewport */
+ /* Reset default styles and fill the viewport */
     html, body {
         margin: 0;
         padding: 0;
@@ -26,7 +30,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        /*background: url('/img/islandv2.png') no-repeat center center;*/
+        background: url('/img/islandv2.png') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -110,6 +114,45 @@
         pointer-events: none; /* Disables all click events */
         opacity: 0.5; /* Makes the grid items look faded */
     }
+    
+    .swal2-actions {
+        flex-direction: row !important;  /* Make buttons stack horizontally */
+        align-items: center;             /* Vertically center align buttons */
+        justify-content: center;        /* Horizontally center align buttons */
+    }
+    
+    .swal2-styled {
+        margin-right: 10px;  /* Add some space between the buttons */
+    }
+    
+    #boat {
+        transition: top 2s, left 2s; /* This will ensure the boat moves smoothly over 2 seconds */
+    }
+    
+    .grid-item:active {
+        transform: scale(0.95); /* Slightly reduce the size of the grid when clicked */
+        transition: transform 0.1s; /* Quick transition for the click effect */
+    }
+
+    .grid-item.reward-found {
+        animation: rewardFound 0.5s forwards; /* Apply the animation named 'rewardFound' */
+    }
+    
+    @keyframes rewardFound {
+        0% {
+            transform: scale(0.5);
+            opacity: 0;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+    
+    .main-container.disabled {
+        opacity: 0.5;
+        pointer-events: none;
+    }
 
 
 
@@ -118,11 +161,12 @@
 <!-- Title and Tagline -->
 <div class="main-container">
     <div class="title-container">
-        <h1>Your Game Title</h1>
-        <h3>Your Game Tagline</h3>
+        <h1>EV3</h1>
+        <h3>Treasure Hunting</h3>
         
         @if(Auth::check())
             <span>Welcome, {{ Auth::user()->name }}</span>
+            <span id="userWalletAddress" style="display: none;">{{ Auth::user()->wallet_address }}</span>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
                 <button type="submit" class="twitter-login">Logout</button>
@@ -153,7 +197,7 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const gridItems = document.querySelectorAll('.grid-item');
-
+    
         gridItems.forEach(item => {
             item.addEventListener('click', function() {
                 const gridId = this.getAttribute('data-id');
@@ -161,28 +205,105 @@
             });
         });
     });
-
+    
     function checkGrid(gridId) {
         const gridElement = document.querySelector(`.grid-item[data-id="${gridId}"]`);
     
         axios.post('/checkGrid', { id: gridId })
         .then(response => {
-            let swalConfig = {
-                title: 'Notification',
-                text: response.data.message,
-                icon: response.data.message === 'You have reached your click limit for today.' ? 'error' : 'success',
-                confirmButtonText: 'OK',
-            };
-    
+            //let swalConfig = {
+                //title: 'Notification',
+                //text: response.data.message,
+                //icon: response.data.message === 'You have reached your click limit for today.' ? 'error' : 'success',
+                //showConfirmButton: true, // hide the default confirm button
+                //html: `<button id="swal-custom-ok" class="swal2-confirm swal2-styled">OK</button>` // custom OK button
+                //html: `You have reached your click limit for today. Share on twitter to get one more click ! ` // custom OK button
+            //};
+            
             if (response.data.message === 'You have reached your click limit for today.') {
-                const twitterShareUrl = `https://twitter.com/intent/tweet?text=Your%20preset%20message%20here&url=https://yourwebsite.com`;
-                swalConfig.footer = `<a href="${twitterShareUrl}" target="_blank" class="btn btn-primary">Share on Twitter</a>`;
+                const twitterShareUrl = `https://twitter.com/intent/tweet?text=Unleash%20the%20Hunt:%20Secure%20Your%20Whitelist%20Spot%20Now!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+                
+                let swalConfig = {
+                    title: 'EV3',
+                    showConfirmButton: false,
+                    html: `
+                        You have reached your click limit for today. Share on twitter to get one more click !
+                        <br><br>
+                        <a href="${twitterShareUrl}" target="_blank">
+                            <button class="swal2-confirm swal2-styled">Share on Twitter</button>
+                        </a>`
+                };
+
+                Swal.fire(swalConfig);
+            };
+            
+            if (response.data.message === 'Congratulations! You found a reward!') {
+            const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+            gridElement.classList.add('reward-found');
+            
+            let swalConfig = {
+                title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
+                input: 'text',
+                inputPlaceholder: 'Enter your wallet address',
+                showCancelButton: true,
+                confirmButtonText: 'Submit',
+                showLoaderOnConfirm: true,
+                preConfirm: (walletAddress) => {
+                    return axios.post('/wallet', { wallet_address: walletAddress })
+                        .then(response => {
+                            if (!response.data.success) {
+                                throw new Error(response.data.message);
+                            }
+                            return response.data;
+                        })
+                        .catch(error => {
+                            Swal.showValidationMessage(`Request failed: ${error}`);
+                        });
+                },
+                allowOutsideClick: () => !Swal.isLoading()
+            };
+        
+            Swal.fire(swalConfig).then((result) => {
+                if (result.value) {
+                    Swal.fire({
+                        title: 'Saved!',
+                        text: 'Your wallet address has been saved.',
+                        icon: 'success',
+                        showConfirmButton: false,
+                        html: `
+                            <br><br>
+                            <a href="${twitterShareUrl}" target="_blank">
+                                <button class="swal2-confirm swal2-styled">Share on Twitter</button>
+                            </a>`
+                    });
+                }
+            });
+        };
+
+            
+            if (response.data.message === 'Try next time') {
+                let swalConfig = {
+                    title: 'NO WAY !',
+                    showConfirmButton: false,
+                    html: `
+                        Hi, try another luck we have whitelist spot left !`
+                };
+
+                Swal.fire(swalConfig);
             }
-    
-            Swal.fire(swalConfig);
-    
-            // Only update the grid if the response is not 'Try next time' and not 'You have reached your click limit for today.'
-            if (response.data.message !== 'Try next time' && response.data.message !== 'You have reached your click limit for today.') {
+            
+            if (response.data.message === 'Grid already clicked.') {
+                let swalConfig = {
+                    title: 'Dekkk',
+                    showConfirmButton: false,
+                    html: `
+                        Grid already clicked.`
+                };
+
+                Swal.fire(swalConfig);
+            }
+            
+            if (response.data.message !== 'You have reached your click limit for today.') {
                 gridElement.classList.add('clicked');
                 gridElement.innerHTML = '🎁'; 
                 gridElement.onclick = null; 
@@ -192,11 +313,41 @@
                 let currentClicks = parseInt(remainingClicksDiv.textContent.match(/\d+/)[0]);
                 remainingClicksDiv.textContent = `You have ${currentClicks - 1} clicks left for today.`;
             }
+
         });
     }
     
     window.checkGrid = checkGrid;
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const userWalletAddress = document.getElementById('userWalletAddress');
+        
+        if (userWalletAddress && userWalletAddress.textContent) {
+            // Display the SweetAlert message
+            Swal.fire({
+                title: 'Whitelisted!',
+                html: `You've already found your spot! Make sure to follow EV3 or join discord to get updates! Your wallet address is: <br> <strong>${userWalletAddress.textContent}</strong>`,
+                icon: 'info',
+                allowOutsideClick: false, // Prevent closing the alert by clicking outside
+                allowEscapeKey: false,    // Prevent closing the alert using the escape key
+                showConfirmButton: false
+            });
 
+    
+            // Fade out the main container
+            const mainContainer = document.querySelector('.main-container');
+            mainContainer.style.opacity = '0.5';
+            mainContainer.style.pointerEvents = 'none'; // Disable all interactions
+    
+            // Enable only the logout button
+            const logoutButton = document.querySelector('.twitter-login');
+            if (logoutButton) {
+                logoutButton.style.pointerEvents = 'auto';
+            }
+        }
+    });
+
+    
     
     let boatInterval;
     let boatPosition = { x: 0, y: 0 }; // Starting position
@@ -284,7 +435,7 @@
         // Remove the boat's movement
         clearInterval(boatInterval);
     }
-
+    
     // Call the showBoat function to start the boat animation
     showBoat();
 </script>

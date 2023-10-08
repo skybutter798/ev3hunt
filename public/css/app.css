@@ -1,29 +1,105 @@
-.grid-container {
-    display: grid;
-    grid-template-columns: repeat(50, 10px);  // 50x50 = 2500 
-    grid-template-rows: repeat(50, 10px);
-    gap: 1px;
-    width: 500px; 
-    height: 500px;
-    position: relative;
-    background: url('/img/island.png') no-repeat center center;
-    background-size: cover;  // Make sure the image covers the entire grid.
-}
-
-.grid-item {
-    width: 100%;
-    height: 100%;
-    border: 1px solid #ddd;
-    background-color: rgba(255,255,255,0.5);  // semi-transparent white to show the island image behind
-    transition: background-color 0.3s;
-
-    &:hover {
-        background-color: rgba(238,238,238,0.5);
-        cursor: pointer;
+ /* Reset default styles and fill the viewport */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        width: 100%;
+        background-color: black; /* Set background to black */
+        display: flex; /* Flexbox for centering */
+        align-items: center; /* Vertical centering */
+        justify-content: center; /* Horizontal centering */
+    }
+    
+    /* Adjust grid-container to fill the screen */
+    .grid-container {
+        display: grid;
+        grid-template-columns: repeat(50, 20px); /* Set to a fixed value for square boxes */
+        grid-template-rows: repeat(50, 20px); /* Same fixed value for square boxes */
+        gap: 1px;
+        max-width: 1000px; /* 50 boxes * 20px each */
+        max-height: 1000px; /* 50 boxes * 20px each */
+        overflow-y: auto; /* Make it vertically scrollable */
+        background: url('/img/islandv2.png') no-repeat center center;
+        background-size: cover;
+        background-attachment: local;
+        position: relative;
+    }
+    
+    .grid-item {
+        width: 100%;
+        height: 100%;
+        border: 1px solid #ddd;
+        background-color: rgba(255,255,255,0.1);
+        transition: background-color 0.3s;
+    
+        &:hover {
+            background-color: rgba(238,238,238,0.5);
+            cursor: pointer;
+        }
+    
+        &.clicked {
+            background-color: black;
+            pointer-events: none;
+        }
+    
+        &.reward {
+            background-color: rgba(255,217,102,0.5);
+        }
+    }
+    /* Styling for the main container */
+    .main-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center children horizontally */
+        justify-content: center; /* Center children vertically */
+        height: 100vh; /* Take full viewport height */
     }
 
-    &.clicked {
-        background-color: rgba(204,204,204,0.5);
-        pointer-events: none;  // Makes the grid box unclickable
+    /* Modify the title-container to use Flexbox */
+    .title-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center; /* Center the title and tagline */
+        position: relative; /* Set to relative to position the Twitter login button */
+        width: 100%;
     }
-}
+
+    /* Style for the Twitter login button */
+    .twitter-login {
+        position: absolute; /* Absolute positioning */
+        top: 50%; /* Center it vertically */
+        right: 0; /* Push it to the right */
+        transform: translateY(-50%); /* Adjust for perfect centering */
+        background-color: #1DA1F2;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+
+    .twitter-login:hover {
+        background-color: #0c85d0;
+    }
+
+    h1 {
+        font-size: 2em;
+        color: #FFFFFF;
+        margin-bottom: 10px; /* Add some space between the title and the tagline */
+    }
+
+    h3 {
+        font-size: 1.2em;
+        color: #888; /* A lighter color for the tagline */
+    }
+    
+    .custom-swal {
+        background-image: url('/img/islandv2.png');
+        background-size: cover;
+    }
+    
+    .grid-container.disabled .grid-item {
+        pointer-events: none; /* Disables all click events */
+        opacity: 0.5; /* Makes the grid items look faded */
+    }

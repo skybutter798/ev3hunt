@@ -25,7 +25,7 @@ class GameController extends Controller
                          ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
                          ->count();
     
-            $remainingClicks = 100 - $todayClicks;
+            $remainingClicks = 50 - $todayClicks;
         }
     
         $grids = Grid::all();
@@ -43,7 +43,7 @@ class GameController extends Controller
                      ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
                      ->count();
     
-        if ($todayClicks >= 100) {
+        if ($todayClicks >= 50) {
             return response()->json(['message' => 'You have reached your click limit for today.']);
         }
     
@@ -62,6 +62,11 @@ class GameController extends Controller
         $grid->clicked = true;
         $grid->user_id = Auth::id();
         $grid->save();
+        
+        // Log the click
+        $userId = Auth::id();
+        $userName = $user->name;
+        Log::channel('grid_clicks')->info("User {$userId}, {$userName} clicked on grid {$gridId}");
     
         if ($grid->reward_item_id) {
             // You can customize this to return the actual reward title or any other details.
@@ -96,6 +101,19 @@ class GameController extends Controller
     
     public function grantExtraClick($userId) {
          Log::info('one more click');
+    }
+    
+    public function saveWalletAddress(Request $request)
+    {
+        $request->validate([
+            'wallet_address' => 'required|string|max:255', // You can adjust the validation rules as needed
+        ]);
+    
+        $user = Auth::user();
+        $user->wallet_address = $request->wallet_address;
+        $user->save();
+    
+        return response()->json(['success' => true, 'message' => 'Wallet address saved successfully!']);
     }
 
 }
