@@ -30,7 +30,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islandv2.png') no-repeat center center;
+        /*background: url('/img/islandv2.png') no-repeat center center;*/
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -50,7 +50,7 @@
     
         &.clicked {
             background-color: black;
-            pointer-events: none;
+            pointer-events: auto;
         }
     
         &.reward {
@@ -154,6 +154,17 @@
         pointer-events: none;
     }
 
+    .npc-icon {
+        width: 100%;
+        height: 100%;
+        cursor: pointer;
+        transition: transform 0.2s;
+        pointer-events: auto; /* Always allow clicking on the NPC */
+    }
+    
+    .npc-icon:hover {
+        transform: scale(1.1); /* Slightly enlarge the NPC when hovered */
+    }
 
 
 </style>
@@ -165,7 +176,7 @@
         <h3>Treasure Hunting</h3>
         
         @if(Auth::check())
-            <span>Welcome, {{ Auth::user()->name }}</span>
+            <span style="color:white">Welcome, {{ Auth::user()->name }}</span>
             <span id="userWalletAddress" style="display: none;">{{ Auth::user()->wallet_address }}</span>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
@@ -175,13 +186,14 @@
             <a href="{{ route('login.twitter') }}" class="twitter-login">Login with Twitter</a>
         @endif
         
-        <div id="remainingClicksDiv">
+        <div id="remainingClicksDiv" style="color:white">
             You have {{ $remainingClicks }} clicks left for today.
         </div>
     </div>
 
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
     <img src="/img/boat.png" id="boat" style="display: none; position: absolute;" onclick="boatClicked()">
+    <img src="/img/boat.png" id="npc" style="display: none; position: absolute;" onclick="npcClicked()">
     @foreach ($grids as $grid)
         <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
             @if ($grid->reward_item_id)
@@ -294,7 +306,7 @@
             
             if (response.data.message === 'Grid already clicked.') {
                 let swalConfig = {
-                    title: 'Dekkk',
+                    title: 'Bzzzzt',
                     showConfirmButton: false,
                     html: `
                         Grid already clicked.`
@@ -371,19 +383,19 @@
         const direction = Math.floor(Math.random() * 4);
         switch (direction) {
             case 0: // Up
-                boatPosition.y = Math.max(0, boatPosition.y - 1);
+                boatPosition.y = Math.max(0, boatPosition.y - 5);
                 break;
             case 1: // Down
-                boatPosition.y = Math.min(gridHeight - 1, boatPosition.y + 1);
+                boatPosition.y = Math.min(gridHeight - 5, boatPosition.y + 5);
                 break;
             case 2: // Left
-                boatPosition.x = Math.max(0, boatPosition.x - 1);
+                boatPosition.x = Math.max(0, boatPosition.x - 5);
                 break;
             case 3: // Right
-                boatPosition.x = Math.min(gridWidth - 1, boatPosition.x + 1);
+                boatPosition.x = Math.min(gridWidth - 5, boatPosition.x + 5);
                 break;
         }
-        console.log("Boat moved to position:", boatPosition); // Log the new position
+        //console.log("Boat moved to position:", boatPosition); // Log the new position
         updateBoatPosition();
     }
     
@@ -399,7 +411,7 @@
         boatElement.style.left = `${leftPosition}px`;
         boatElement.style.display = 'block'; // Show the boat
     
-        console.log("Boat position updated on grid to:", { top: topPosition, left: leftPosition }); // Log the updated position on the grid
+        //console.log("Boat position updated on grid to:", { top: topPosition, left: leftPosition }); // Log the updated position on the grid
     }
     
     function boatClicked() {
@@ -436,7 +448,40 @@
         clearInterval(boatInterval);
     }
     
-    // Call the showBoat function to start the boat animation
     showBoat();
+    
+    function showNpc() {
+        // Set the boat's initial position
+        npcPosition = { x: Math.floor(Math.random() * gridWidth), y: Math.floor(Math.random() * gridHeight) };
+        console.log("Npc initial position:", npcPosition);
+        
+        updateNpcPosition();
+    }
+    
+    function updateNpcPosition() {
+        const npcElement = document.getElementById('npc');
+        const gridSize = 20; // Assuming each grid item is 20px by 20px
+    
+        const topPosition = npcPosition.y * gridSize;
+        const leftPosition = npcPosition.x * gridSize;
+    
+        npcElement.style.top = `${topPosition}px`;
+        npcElement.style.left = `${leftPosition}px`;
+        npcElement.style.display = 'block'; // Show the boat
+    }
+    
+    function npcClicked() {
+        Swal.fire({
+            title: 'Mysterious NPC',
+            text: 'Welcome to the island! Seek and you shall find treasures beyond your wildest dreams!',
+            imageUrl: '/img/pixel-frame.png', // Assuming you have a pixelated frame image
+            imageWidth: 400,
+            imageHeight: 200,
+            imageAlt: 'Pixel Frame',
+            confirmButtonText: 'Thank you!'
+        });
+    }
+    showNpc();
+
 </script>
 @endsection
