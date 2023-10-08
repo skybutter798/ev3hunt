@@ -24,8 +24,12 @@ class GameController extends Controller
                          ->where('user_id', $user->id)
                          ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
                          ->count();
-    
-            $remainingClicks = 50 - $todayClicks;
+                         
+            if ($todayClicks >2){
+                $remainingClicks = 0;
+            } else {
+                $remainingClicks = 2 - $todayClicks;
+            }
         }
     
         $grids = Grid::all();
@@ -37,15 +41,17 @@ class GameController extends Controller
     {
         $user = Auth::user();
     
-        // Check how many grids the user has clicked today
         $todayClicks = DB::table('grids')
                      ->where('user_id', $user->id)
                      ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
                      ->count();
     
-        if ($todayClicks >= 50) {
-            return response()->json(['message' => 'You have reached your click limit for today.']);
+        if ($todayClicks >= 2 && $user->share == 0) {
+            return response()->json(['message' => 'limit']);
+        } elseif ($todayClicks >= 3 || ($todayClicks >= 2 && $user->share == 2)) {
+            return response()->json(['message' => 'shared']);
         }
+
     
         $gridId = $request->input('id');
         $grid = Grid::find($gridId);
@@ -55,13 +61,16 @@ class GameController extends Controller
         }
     
         if ($grid->clicked) {
-            return response()->json(['message' => 'Grid already clicked.']);
+            return response()->json(['message' => 'repeat']);
         }
     
-        // Update the grid's clicked status and user_id
         $grid->clicked = true;
         $grid->user_id = Auth::id();
         $grid->save();
+        if ($user->share == 1) {
+            $user->share = 2;
+            $user->save();
+        }
         
         // Log the click
         $userId = Auth::id();
@@ -69,39 +78,24 @@ class GameController extends Controller
         Log::channel('grid_clicks')->info("User {$userId}, {$userName} clicked on grid {$gridId}");
     
         if ($grid->reward_item_id) {
-            // You can customize this to return the actual reward title or any other details.
-            return response()->json(['message' => 'Congratulations! You found a reward!']);
+            return response()->json(['message' => 'reward']);
         }
+
+        return response()->json(['message' => 'none']);
+    }
     
-        return response()->json(['message' => 'Try next time']);
+    public function updateStatus(Request $request) {
+        $user = Auth::user();
+        if ($user->share == 0) {
+            $user->share = 1;
+        } elseif ($user->share == 1) {
+            $user->share = 2;
+        }
+        $user->save();
+        return response()->json(['message' => 'Share status updated']);
     }
 
-    
-    public function checkForTweet($userId) {
-        $user = User::find($userId);
-    
-        $connection = new TwitterOAuth(
-            env('TWITTER_API_KEY'), 
-            env('TWITTER_API_SECRET'),
-            $user->token,  // Assuming you saved the user's Twitter token
-            $user->tokenSecret  // Assuming you saved the user's Twitter token secret
-        );
-    
-        $tweets = $connection->get("statuses/user_timeline", ["count" => 10, "exclude_replies" => true]);
-    
-        foreach ($tweets as $tweet) {
-            if (strpos($tweet->text, '#EV3') !== false) {
-                // The tweet contains the hashtag
-                // Grant the user an extra click and break out of the loop
-                $this->grantExtraClick($userId);
-                break;
-            }
-        }
-    }
-    
-    public function grantExtraClick($userId) {
-         Log::info('one more click');
-    }
+
     
     public function saveWalletAddress(Request $request)
     {

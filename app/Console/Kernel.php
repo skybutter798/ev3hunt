@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\DB;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +13,9 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('your_command_name')->daily();
+        $schedule->call(function () {
+            DB::table('users')->update(['share' => 0]);
+        })->timezone('Asia/Kuala_Lumpur')->daily();
     }
 
 

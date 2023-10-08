@@ -3,10 +3,6 @@
 @section('content')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="EV3 Blue Code">
-<meta name="twitter:description" content="Unleash the Hunt: Secure Your Whitelist Spot Now!">
-<meta name="twitter:image" content="https://hunt.ev3nft.xyz/img/dive.png">
 
 <style>
  /* Reset default styles and fill the viewport */
@@ -30,7 +26,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        /*background: url('/img/islandv2.png') no-repeat center center;*/
+        background: url('/img/island.png') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -106,7 +102,7 @@
     }
     
     .custom-swal {
-        background-image: url('/img/islandv2.png');
+        background-image: url('/img/island.png');
         background-size: cover;
     }
     
@@ -170,11 +166,10 @@
 </style>
 
 <!-- Title and Tagline -->
-<div class="main-container">
+<div class="main-container" style="margin-bottom : 50px;">
     <div class="title-container">
-        <h1>EV3</h1>
-        <h3>Treasure Hunting</h3>
-        
+        <h1>EV3 - Blue Code</h1>
+
         @if(Auth::check())
             <span style="color:white">Welcome, {{ Auth::user()->name }}</span>
             <span id="userWalletAddress" style="display: none;">{{ Auth::user()->wallet_address }}</span>
@@ -186,9 +181,16 @@
             <a href="{{ route('login.twitter') }}" class="twitter-login">Login with Twitter</a>
         @endif
         
-        <div id="remainingClicksDiv" style="color:white">
-            You have {{ $remainingClicks }} clicks left for today.
-        </div>
+        @if(Auth::check() && Auth::user()->share == 1)
+            <div id="remainingClicksDiv" style="color:white">
+                You have 1 click left for today.
+            </div>
+        @else
+            <div id="remainingClicksDiv" style="color:white">
+                You have {{ $remainingClicks }} clicks left for today.
+            </div>
+        @endif
+
     </div>
 
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
@@ -217,29 +219,65 @@
             });
         });
     });
+
     
     function checkGrid(gridId) {
         const gridElement = document.querySelector(`.grid-item[data-id="${gridId}"]`);
+        const remainingClicksDiv = document.getElementById('remainingClicksDiv');
+        let remainingClicks = parseInt(remainingClicksDiv.textContent.match(/\d+/)[0]);
     
         axios.post('/checkGrid', { id: gridId })
         .then(response => {
-            //let swalConfig = {
-                //title: 'Notification',
-                //text: response.data.message,
-                //icon: response.data.message === 'You have reached your click limit for today.' ? 'error' : 'success',
-                //showConfirmButton: true, // hide the default confirm button
-                //html: `<button id="swal-custom-ok" class="swal2-confirm swal2-styled">OK</button>` // custom OK button
-                //html: `You have reached your click limit for today. Share on twitter to get one more click ! ` // custom OK button
-            //};
+            if (response.data.message !== 'limit' && response.data.message !== 'shared' && response.data.message !== 'repeat') {
+                gridElement.classList.add('clicked');
+            }
             
-            if (response.data.message === 'You have reached your click limit for today.') {
+            if (response.data.message === 'limit') {
                 const twitterShareUrl = `https://twitter.com/intent/tweet?text=Unleash%20the%20Hunt:%20Secure%20Your%20Whitelist%20Spot%20Now!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
                 
                 let swalConfig = {
                     title: 'EV3',
                     showConfirmButton: false,
                     html: `
-                        You have reached your click limit for today. Share on twitter to get one more click !
+                        You have reached your click limit for today. Share on twitter to get one more click!
+                        <br><br>
+                        <a href="${twitterShareUrl}" target="_blank">
+                            <button class="swal2-confirm swal2-styled">Earn Extra Click</button>
+                        </a>`
+                };
+            
+                Swal.fire(swalConfig);
+            
+                document.querySelector('.swal2-confirm').addEventListener('click', function() {
+                    remainingClicks++;
+                    remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
+                    axios.post('/updateStatus')
+                    .then(response => {
+                        console.log(response.data.message); // Log the response for debugging
+            
+                        // Display a message to the user about the extra click
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'You have earned one more click. Use it wisely!',
+                            icon: 'success',
+                            confirmButtonText: 'Got it!'
+                        });
+                    })
+                    .catch(error => {
+                        console.error("Error updating share status:", error);
+                    });
+                });
+            };
+
+            
+            if (response.data.message === 'shared') {
+                const twitterShareUrl = `https://twitter.com/intent/tweet?text=Unleash%20the%20Hunt:%20Secure%20Your%20Whitelist%20Spot%20Now!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+                
+                let swalConfig = {
+                    title: 'EV3',
+                    showConfirmButton: false,
+                    html: `
+                        You have reached your click limit for today. Help us to share out the fun!
                         <br><br>
                         <a href="${twitterShareUrl}" target="_blank">
                             <button class="swal2-confirm swal2-styled">Share on Twitter</button>
@@ -249,51 +287,57 @@
                 Swal.fire(swalConfig);
             };
             
-            if (response.data.message === 'Congratulations! You found a reward!') {
-            const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
-            gridElement.classList.add('reward-found');
+            if (response.data.message === 'reward') {
+                const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+                gridElement.classList.add('reward-found');
+                // Decrement and update the remaining clicks
+                remainingClicks--;
+                remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
             
-            let swalConfig = {
-                title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
-                input: 'text',
-                inputPlaceholder: 'Enter your wallet address',
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                showLoaderOnConfirm: true,
-                preConfirm: (walletAddress) => {
-                    return axios.post('/wallet', { wallet_address: walletAddress })
-                        .then(response => {
-                            if (!response.data.success) {
-                                throw new Error(response.data.message);
-                            }
-                            return response.data;
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(`Request failed: ${error}`);
+                let swalConfig = {
+                    title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
+                    input: 'text',
+                    inputPlaceholder: 'Enter your wallet address',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    showLoaderOnConfirm: true,
+                    preConfirm: (walletAddress) => {
+                        return axios.post('/wallet', { wallet_address: walletAddress })
+                            .then(response => {
+                                if (!response.data.success) {
+                                    throw new Error(response.data.message);
+                                }
+                                return response.data;
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage(`Request failed: ${error}`);
+                            });
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                };
+            
+                Swal.fire(swalConfig).then((result) => {
+                    if (result.value) {
+                        Swal.fire({
+                            title: 'Saved!',
+                            text: 'Your wallet address has been saved.',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            html: `
+                                <br><br>
+                                <a href="${twitterShareUrl}" target="_blank">
+                                    <button class="swal2-confirm swal2-styled">Share on Twitter</button>
+                                </a>`
                         });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
+                    }
+                });
             };
-        
-            Swal.fire(swalConfig).then((result) => {
-                if (result.value) {
-                    Swal.fire({
-                        title: 'Saved!',
-                        text: 'Your wallet address has been saved.',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        html: `
-                            <br><br>
-                            <a href="${twitterShareUrl}" target="_blank">
-                                <button class="swal2-confirm swal2-styled">Share on Twitter</button>
-                            </a>`
-                    });
-                }
-            });
-        };
 
             
-            if (response.data.message === 'Try next time') {
+            if (response.data.message === 'none') {
+                // Decrement and update the remaining clicks
+                remainingClicks--;
+                remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
                 let swalConfig = {
                     title: 'NO WAY !',
                     showConfirmButton: false,
@@ -304,7 +348,7 @@
                 Swal.fire(swalConfig);
             }
             
-            if (response.data.message === 'Grid already clicked.') {
+            if (response.data.message === 'repeat') {
                 let swalConfig = {
                     title: 'Bzzzzt',
                     showConfirmButton: false,
@@ -313,17 +357,6 @@
                 };
 
                 Swal.fire(swalConfig);
-            }
-            
-            if (response.data.message !== 'You have reached your click limit for today.') {
-                gridElement.classList.add('clicked');
-                gridElement.innerHTML = '🎁'; 
-                gridElement.onclick = null; 
-    
-                // Update the remaining clicks count
-                let remainingClicksDiv = document.getElementById('remainingClicksDiv');
-                let currentClicks = parseInt(remainingClicksDiv.textContent.match(/\d+/)[0]);
-                remainingClicksDiv.textContent = `You have ${currentClicks - 1} clicks left for today.`;
             }
 
         });
@@ -471,16 +504,76 @@
     }
     
     function npcClicked() {
+        // Start the first message
+        firstMessage();
+    }
+    
+    function firstMessage() {
         Swal.fire({
             title: 'Mysterious NPC',
-            text: 'Welcome to the island! Seek and you shall find treasures beyond your wildest dreams!',
-            imageUrl: '/img/pixel-frame.png', // Assuming you have a pixelated frame image
+            text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 250 x 250 grid and brace yourself for a journey like no other.',
+            imageUrl: '/img/pixel-frame.png',
             imageWidth: 400,
             imageHeight: 200,
             imageAlt: 'Pixel Frame',
-            confirmButtonText: 'Thank you!'
+            showCancelButton: true,
+            confirmButtonText: 'Next',
+            cancelButtonText: 'Exit'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                secondMessage();
+            }
         });
     }
+    
+    function secondMessage() {
+        Swal.fire({
+            title: 'Island Secrets',
+            text: 'Within this expansive realm, the unexpected awaits you. Some squares might hide coveted whitelist spots, while others guard hidden treasures or elusive tickets. And sometimes, the grid may just test your patience with an empty spot, leaving your fate in the hands of luck.',
+            imageUrl: '/img/pixel-frame.png',
+            imageWidth: 400,
+            imageHeight: 200,
+            imageAlt: 'Pixel Frame',
+            showCancelButton: true,
+            confirmButtonText: 'Next',
+            cancelButtonText: 'Exit'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                thirdMessage();
+            }
+        });
+    }
+    
+    function thirdMessage() {
+        Swal.fire({
+            title: 'The Island’s Generosity',
+            text: 'By connecting with your Twitter, the island grants you the power of 2 clicks each day. As the clock resets at GMT+8 00:00, so do your chances. And if you ever find yourself eager for just one more chance, spread word of our land on Twitter, and an additional click shall be bestowed upon you.',
+            imageUrl: '/img/pixel-frame.png',
+            imageWidth: 400,
+            imageHeight: 200,
+            imageAlt: 'Pixel Frame',
+            showCancelButton: true,
+            confirmButtonText: 'Next',
+            cancelButtonText: 'Exit'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fourthMessage();
+            }
+        });
+    }
+    
+    function fourthMessage() {
+        Swal.fire({
+            title: 'Whispers of the Wind',
+            text: 'Always be on your guard, adventurer. The winds whisper of surprise events that might come your way. Our islands story unfolds on Twitter, so stay close and listen well. So, are you ready to test your mettle and seek out the treasures that await? The Island beckons! 🏝🔍🎁',
+            imageUrl: '/img/pixel-frame.png',
+            imageWidth: 400,
+            imageHeight: 200,
+            imageAlt: 'Pixel Frame',
+            confirmButtonText: 'Ahoy!'
+        });
+    }
+
     showNpc();
 
 </script>
