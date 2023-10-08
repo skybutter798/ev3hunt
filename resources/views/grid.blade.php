@@ -165,8 +165,12 @@
 
 </style>
 
-<!-- Title and Tagline -->
-<div class="main-container" style="margin-bottom : 50px;">
+<div id="npcContainer" style="position: absolute; left: 0; bottom: 0; z-index: 10;">
+    <img src="/img/oldman_standv2.png" id="npc" style="height:500px;" onclick="npcClicked()">
+    <button id="closeNpc" style="position: absolute; top: 10px; right: 10px; background-color: black; color: white; cursor: pointer;">X</button>
+</div>
+
+<div class="main-container">
     <div class="title-container">
         <h1>EV3 - Blue Code</h1>
 
@@ -194,16 +198,15 @@
     </div>
 
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
-    <img src="/img/boat.png" id="boat" style="display: none; position: absolute;" onclick="boatClicked()">
-    <img src="/img/boat.png" id="npc" style="display: none; position: absolute;" onclick="npcClicked()">
-    @foreach ($grids as $grid)
-        <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
-            @if ($grid->reward_item_id)
-                🎁  <!-- Display a gift icon for grid items with a reward -->
-            @endif
-        </div>
-    @endforeach
-</div>
+        <img src="/img/boat.png" id="boat" style="display: none; position: absolute;" onclick="boatClicked()">
+        @foreach ($grids as $grid)
+            <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
+                @if ($grid->reward_item_id)
+                    🎁  <!-- Display a gift icon for grid items with a reward -->
+                @endif
+            </div>
+        @endforeach
+    </div>
 
 </div>
 
@@ -242,7 +245,7 @@
                         You have reached your click limit for today. Share on twitter to get one more click!
                         <br><br>
                         <a href="${twitterShareUrl}" target="_blank">
-                            <button class="swal2-confirm swal2-styled">Earn Extra Click</button>
+                            <button class="swal2-confirm swal2-styled" style="background-color: black;">Earn Extra Click</button>
                         </a>`
                 };
             
@@ -280,7 +283,7 @@
                         You have reached your click limit for today. Help us to share out the fun!
                         <br><br>
                         <a href="${twitterShareUrl}" target="_blank">
-                            <button class="swal2-confirm swal2-styled">Share on Twitter</button>
+                            <button class="swal2-confirm swal2-styled" style="background-color: black;">Share on Twitter</button>
                         </a>`
                 };
 
@@ -326,7 +329,7 @@
                             html: `
                                 <br><br>
                                 <a href="${twitterShareUrl}" target="_blank">
-                                    <button class="swal2-confirm swal2-styled">Share on Twitter</button>
+                                    <button class="swal2-confirm swal2-styled" style="background-color: black;">Share on Twitter</button>
                                 </a>`
                         });
                     }
@@ -467,10 +470,11 @@
     
         // Display the popout message
         Swal.fire({
-            title: 'Boat Clicked!',
+            title: 'Flying Bird Clicked!',
             text: message,
             icon: icon,
-            confirmButtonText: 'OK'
+            confirmButtonText: 'OK',
+            confirmButtonColor: '#000000',
         });
     
         // Hide the boat
@@ -482,26 +486,7 @@
     }
     
     showBoat();
-    
-    function showNpc() {
-        // Set the boat's initial position
-        npcPosition = { x: Math.floor(Math.random() * gridWidth), y: Math.floor(Math.random() * gridHeight) };
-        console.log("Npc initial position:", npcPosition);
-        
-        updateNpcPosition();
-    }
-    
-    function updateNpcPosition() {
-        const npcElement = document.getElementById('npc');
-        const gridSize = 20; // Assuming each grid item is 20px by 20px
-    
-        const topPosition = npcPosition.y * gridSize;
-        const leftPosition = npcPosition.x * gridSize;
-    
-        npcElement.style.top = `${topPosition}px`;
-        npcElement.style.left = `${leftPosition}px`;
-        npcElement.style.display = 'block'; // Show the boat
-    }
+
     
     function npcClicked() {
         // Start the first message
@@ -510,15 +495,16 @@
     
     function firstMessage() {
         Swal.fire({
-            title: 'Mysterious NPC',
+            title: 'Treasure Hunt',
             text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 250 x 250 grid and brace yourself for a journey like no other.',
-            imageUrl: '/img/pixel-frame.png',
-            imageWidth: 400,
-            imageHeight: 200,
-            imageAlt: 'Pixel Frame',
+            imageUrl: '/img/whitelist.png',
+            imageAlt: 'EV3 Hunt',
             showCancelButton: true,
             confirmButtonText: 'Next',
-            cancelButtonText: 'Exit'
+            confirmButtonColor: '#000000',
+            cancelButtonText: 'Exit',
+            cancelButtonColor: '#f53636',
+            background: 'black',
         }).then((result) => {
             if (result.isConfirmed) {
                 secondMessage();
@@ -530,13 +516,14 @@
         Swal.fire({
             title: 'Island Secrets',
             text: 'Within this expansive realm, the unexpected awaits you. Some squares might hide coveted whitelist spots, while others guard hidden treasures or elusive tickets. And sometimes, the grid may just test your patience with an empty spot, leaving your fate in the hands of luck.',
-            imageUrl: '/img/pixel-frame.png',
-            imageWidth: 400,
-            imageHeight: 200,
-            imageAlt: 'Pixel Frame',
+            imageUrl: '/img/reward.png',
+            imageAlt: 'Rewards',
             showCancelButton: true,
             confirmButtonText: 'Next',
-            cancelButtonText: 'Exit'
+            confirmButtonColor: '#000000',
+            cancelButtonText: 'Exit',
+            cancelButtonColor: '#f53636',
+            background: 'black',
         }).then((result) => {
             if (result.isConfirmed) {
                 thirdMessage();
@@ -548,13 +535,14 @@
         Swal.fire({
             title: 'The Island’s Generosity',
             text: 'By connecting with your Twitter, the island grants you the power of 2 clicks each day. As the clock resets at GMT+8 00:00, so do your chances. And if you ever find yourself eager for just one more chance, spread word of our land on Twitter, and an additional click shall be bestowed upon you.',
-            imageUrl: '/img/pixel-frame.png',
-            imageWidth: 400,
-            imageHeight: 200,
-            imageAlt: 'Pixel Frame',
+            imageUrl: '/img/twittershare.png',
+            imageAlt: 'Clicking Life',
             showCancelButton: true,
             confirmButtonText: 'Next',
-            cancelButtonText: 'Exit'
+            confirmButtonColor: '#000000',
+            cancelButtonText: 'Exit',
+            cancelButtonColor: '#f53636',
+            background: 'black',
         }).then((result) => {
             if (result.isConfirmed) {
                 fourthMessage();
@@ -566,15 +554,31 @@
         Swal.fire({
             title: 'Whispers of the Wind',
             text: 'Always be on your guard, adventurer. The winds whisper of surprise events that might come your way. Our islands story unfolds on Twitter, so stay close and listen well. So, are you ready to test your mettle and seek out the treasures that await? The Island beckons! 🏝🔍🎁',
-            imageUrl: '/img/pixel-frame.png',
-            imageWidth: 400,
-            imageHeight: 200,
-            imageAlt: 'Pixel Frame',
-            confirmButtonText: 'Ahoy!'
+            imageUrl: '/img/bluecode.png',
+            imageAlt: 'EV3 Blue Code',
+            confirmButtonText: 'Ahoy!',
+            confirmButtonColor: '#000000',
+            background: 'black',
         });
     }
+    
+    document.addEventListener('DOMContentLoaded', function () {
+        const npcContainer = document.getElementById('npcContainer');
+        const closeNpcButton = document.getElementById('closeNpc');
+        const mainContainer = document.querySelector('.main-container');
+    
+        // Initially, disable the main content
+        mainContainer.style.opacity = '0.2';
+        mainContainer.style.pointerEvents = 'none';
+    
+        closeNpcButton.addEventListener('click', function() {
+            // Hide the NPC and enable the main content
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
+        });
+    });
 
-    showNpc();
 
 </script>
 @endsection

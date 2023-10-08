@@ -26,14 +26,19 @@
     <meta name="twitter:image" content="https://hunt.ev3nft.xyz/img/evwhitelist.png">
 
     
-    {{--<link href="{{ mix('css/app.css') }}" rel="stylesheet">--}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <link rel="stylesheet" href="/css/app.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="/js/app.js"></script>
 </head>
+
 <body>
+    
     <div class="container" style="width: 100%; max-width: 100%;">
     @yield('content')
-</div>
-
-
-    {{--<<script src="{{ mix('js/app.js') }}"></script>--}}
+    </div>
+    
 </body>
+
 </html>
