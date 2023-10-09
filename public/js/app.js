@@ -7,6 +7,55 @@ document.addEventListener('DOMContentLoaded', function () {
             checkGrid(gridId);
         });
     });
+    
+    const userWalletAddress = document.getElementById('userWalletAddress');
+    
+    if (userWalletAddress && userWalletAddress.textContent) {
+        // Display the SweetAlert message
+        Swal.fire({
+            title: 'Whitelisted!',
+            html: `You've already found your spot! Make sure to follow EV3 or join discord to get updates! Your wallet address is: <br> <strong>${userWalletAddress.textContent}</strong>`,
+            icon: 'info',
+            allowOutsideClick: false, // Prevent closing the alert by clicking outside
+            allowEscapeKey: false,    // Prevent closing the alert using the escape key
+            showConfirmButton: false
+        });
+
+
+        // Fade out the main container
+        const mainContainer = document.querySelector('.main-container');
+        mainContainer.style.opacity = '0.5';
+        mainContainer.style.pointerEvents = 'none'; // Disable all interactions
+
+        // Enable only the logout button
+        const logoutButton = document.querySelector('.twitter-login');
+        if (logoutButton) {
+            logoutButton.style.pointerEvents = 'auto';
+        }
+    }
+    
+    const npcContainer = document.getElementById('npcContainer');
+    const closeNpcButton = document.getElementById('closeNpc');
+    const mainContainer = document.querySelector('.main-container');
+
+    // Initially, disable the main content
+    mainContainer.style.opacity = '0.2';
+    mainContainer.style.pointerEvents = 'none';
+
+    closeNpcButton.addEventListener('click', function() {
+        // Hide the NPC and enable the main content
+        npcContainer.style.display = 'none';
+        mainContainer.style.opacity = '1';
+        mainContainer.style.pointerEvents = 'auto';
+    });
+
+    // Randomly decide whether to show the boat
+    const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+        if (randomNumber <= 5) {
+            showBoat();
+        }
+    
+    bubbleClicked();
 });
 
 
@@ -117,9 +166,29 @@ function checkGrid(gridId) {
                             <a href="${twitterShareUrl}" target="_blank">
                                 <button class="swal2-confirm swal2-styled" style="background-color: black;">Share on Twitter</button>
                             </a>`
-                    });
+                    }).then(() => {
+                        // Disable clicks on the main container after the wallet address has been saved
+                        const mainContainer = document.querySelector('.main-container');
+                        mainContainer.style.opacity = '0.5';
+                        mainContainer.style.pointerEvents = 'none'; // Disable all interactions
+                    });;
                 }
             });
+        };
+        
+        if (response.data.message === 'cash') {
+            const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20gold%20in%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+            gridElement.classList.add('reward-found');
+            // Decrement and update the remaining clicks
+            remainingClicks--;
+            remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
+        
+            let swalConfig = {
+                title: 'Cash Grabber',
+                showConfirmButton: false,
+                html: `Congratulations! You have snagged a cash grab of $5! Keep hunting for a whitelist spot to secure your wallet. And dont fret if you dont find it immediately; we will prompt you to provide your wallet address at the game conclusion.`
+            };
+            Swal.fire(swalConfig);
         };
 
         
@@ -152,36 +221,6 @@ function checkGrid(gridId) {
 }
 
 window.checkGrid = checkGrid;
-
-document.addEventListener('DOMContentLoaded', function () {
-    const userWalletAddress = document.getElementById('userWalletAddress');
-    
-    if (userWalletAddress && userWalletAddress.textContent) {
-        // Display the SweetAlert message
-        Swal.fire({
-            title: 'Whitelisted!',
-            html: `You've already found your spot! Make sure to follow EV3 or join discord to get updates! Your wallet address is: <br> <strong>${userWalletAddress.textContent}</strong>`,
-            icon: 'info',
-            allowOutsideClick: false, // Prevent closing the alert by clicking outside
-            allowEscapeKey: false,    // Prevent closing the alert using the escape key
-            showConfirmButton: false
-        });
-
-
-        // Fade out the main container
-        const mainContainer = document.querySelector('.main-container');
-        mainContainer.style.opacity = '0.5';
-        mainContainer.style.pointerEvents = 'none'; // Disable all interactions
-
-        // Enable only the logout button
-        const logoutButton = document.querySelector('.twitter-login');
-        if (logoutButton) {
-            logoutButton.style.pointerEvents = 'auto';
-        }
-    }
-});
-
-
 
 let boatInterval;
 let boatPosition = { x: 0, y: 0 }; // Starting position
@@ -269,12 +308,17 @@ function boatClicked() {
     clearInterval(boatInterval);
 }
 
-showBoat();
 
 
-function npcClicked() {
+function bubbleClicked() {
     // Start the first message
     firstMessage();
+    const npcContainer = document.getElementById('npcContainer');
+    const mainContainer = document.querySelector('.main-container');
+    
+    npcContainer.style.display = 'block';
+    mainContainer.style.opacity = '0.2';
+    mainContainer.style.pointerEvents = 'auto';
 }
 
 function firstMessage() {
@@ -285,13 +329,26 @@ function firstMessage() {
         imageAlt: 'EV3 Hunt',
         showCancelButton: true,
         confirmButtonText: 'Next',
-        confirmButtonColor: '#000000',
+        confirmButtonColor: '#f53636',
         cancelButtonText: 'Exit',
-        cancelButtonColor: '#f53636',
+        cancelButtonColor: '#000000',
         background: 'black',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
+        reverseButtons: true,
     }).then((result) => {
         if (result.isConfirmed) {
             secondMessage();
+        } else if (result.isDismissed) {
+            // This will run when the "Exit" button is clicked
+            const npcContainer = document.getElementById('npcContainer');
+            const mainContainer = document.querySelector('.main-container');
+            
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
         }
     });
 }
@@ -304,13 +361,26 @@ function secondMessage() {
         imageAlt: 'Rewards',
         showCancelButton: true,
         confirmButtonText: 'Next',
-        confirmButtonColor: '#000000',
+        confirmButtonColor: '#f53636',
         cancelButtonText: 'Exit',
-        cancelButtonColor: '#f53636',
+        cancelButtonColor: '#000000',
         background: 'black',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
+        reverseButtons: true,
     }).then((result) => {
         if (result.isConfirmed) {
             thirdMessage();
+        } else if (result.isDismissed) {
+            // This will run when the "Exit" button is clicked
+            const npcContainer = document.getElementById('npcContainer');
+            const mainContainer = document.querySelector('.main-container');
+            
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
         }
     });
 }
@@ -323,13 +393,26 @@ function thirdMessage() {
         imageAlt: 'Clicking Life',
         showCancelButton: true,
         confirmButtonText: 'Next',
-        confirmButtonColor: '#000000',
+        confirmButtonColor: '#f53636',
         cancelButtonText: 'Exit',
-        cancelButtonColor: '#f53636',
+        cancelButtonColor: '#000000',
         background: 'black',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
+        reverseButtons: true,
     }).then((result) => {
         if (result.isConfirmed) {
             fourthMessage();
+        } else if (result.isDismissed) {
+            // This will run when the "Exit" button is clicked
+            const npcContainer = document.getElementById('npcContainer');
+            const mainContainer = document.querySelector('.main-container');
+            
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
         }
     });
 }
@@ -341,24 +424,22 @@ function fourthMessage() {
         imageUrl: '/img/bluecode.png',
         imageAlt: 'EV3 Blue Code',
         confirmButtonText: 'Ahoy!',
-        confirmButtonColor: '#000000',
+        confirmButtonColor: '#f53636',
         background: 'black',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
+        reverseButtons: true,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // This will run when the "Exit" button is clicked
+            const npcContainer = document.getElementById('npcContainer');
+            const mainContainer = document.querySelector('.main-container');
+            
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
+        }
     });
 }
-
-document.addEventListener('DOMContentLoaded', function () {
-    const npcContainer = document.getElementById('npcContainer');
-    const closeNpcButton = document.getElementById('closeNpc');
-    const mainContainer = document.querySelector('.main-container');
-
-    // Initially, disable the main content
-    mainContainer.style.opacity = '0.2';
-    mainContainer.style.pointerEvents = 'none';
-
-    closeNpcButton.addEventListener('click', function() {
-        // Hide the NPC and enable the main content
-        npcContainer.style.display = 'none';
-        mainContainer.style.opacity = '1';
-        mainContainer.style.pointerEvents = 'auto';
-    });
-});

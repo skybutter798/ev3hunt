@@ -35,7 +35,7 @@ class AuthController extends Controller
                 'nickname' => $user->getNickname(),
                 'avatar' => $user->getAvatar(),
                 'email' => $user->getEmail(), // Note: Email might be null for Twitter
-                'profile_banner_url' => $user->user['profile_banner_url'],
+                'profile_banner_url' => isset($user->user['profile_banner_url']) ? $user->user['profile_banner_url'] : null,
                 'location' => $user->user['location'],
                 'description' => $user->user['description'],
                 'followers_count' => $user->user['followers_count'],

@@ -78,8 +78,22 @@ class GameController extends Controller
         Log::channel('grid_clicks')->info("User {$userId}, {$userName} clicked on grid {$gridId}");
     
         if ($grid->reward_item_id) {
-            return response()->json(['message' => 'reward']);
+            switch ($grid->reward_item_id) {
+                case 1:
+                    return response()->json(['message' => 'reward']);
+                    break;
+                case 2:
+                    return response()->json(['message' => 'cash']);
+                    break;
+                case 3:
+                    return response()->json(['message' => 'airdrop']);
+                    break;
+                default:
+                    return response()->json(['message' => 'goldenticket']);
+                    break;
+            }
         }
+
 
         return response()->json(['message' => 'none']);
     }

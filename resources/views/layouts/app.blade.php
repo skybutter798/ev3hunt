@@ -27,10 +27,7 @@
 
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-    <link rel="stylesheet" href="/css/app.css">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="/js/app.js"></script>
+    <link rel="stylesheet" href="/css/app.css?v={{ filemtime(public_path('/css/app.css')) }}">
 </head>
 
 <body>

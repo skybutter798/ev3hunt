@@ -8,6 +8,7 @@
         display: flex; /* Flexbox for centering */
         align-items: center; /* Vertical centering */
         justify-content: center; /* Horizontal centering */
+        font-family: Arial, sans-serif;
     }
     
     /* Adjust grid-container to fill the screen */
@@ -19,7 +20,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/island.png') no-repeat center center;
+        background: url('/img/islands.png') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -43,7 +44,7 @@
         }
     
         &.reward {
-            background-color: rgba(255,217,102,0.5);
+            /*background-color: rgba(255,217,102,0.5);*/
         }
     }
     /* Styling for the main container */
@@ -95,7 +96,7 @@
     }
     
     .custom-swal {
-        background-image: url('/img/island.png');
+        background-image: url('/img/islands.png');
         background-size: cover;
     }
     
@@ -153,4 +154,12 @@
     
     .npc-icon:hover {
         transform: scale(1.1); /* Slightly enlarge the NPC when hovered */
+    }
+    
+    .custom-text-color {
+        color: white !important; 
+    }
+    
+    .custom-title-color {
+        color: #2798f3 !important; 
     }
