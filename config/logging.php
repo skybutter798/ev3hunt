@@ -132,6 +132,12 @@ return [
             'path' => storage_path('logs/grid_clicks.log'),
             'level' => 'info',
         ],
+        
+        'user_info' => [
+            'driver' => 'single',
+            'path' => storage_path('logs/user_info.log'),
+            'level' => 'info',
+        ],
     ],
 
 ];

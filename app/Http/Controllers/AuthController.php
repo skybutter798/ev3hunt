@@ -16,7 +16,7 @@ class AuthController extends Controller
 {
     public function redirectToTwitter()
     {
-         Log::info('Redirecting to Twitter for authentication...');
+         Log::channel('user_info')->info('Redirecting to Twitter for authentication...');
         return Socialite::driver('twitter')->redirect();
     }
     
@@ -26,7 +26,7 @@ class AuthController extends Controller
     {
         try {
             $user = Socialite::driver('twitter')->user();
-            Log::info('Received user data from Twitter:', ['user' => $user]);
+            Log::channel('user_info')->info('Received user data from Twitter:', ['user' => $user]);
 
             // Extract the relevant data
             $userData = [

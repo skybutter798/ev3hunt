@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Randomly decide whether to show the boat
         const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-            if (randomNumber <= 90) {
+            if (randomNumber <= 10) {
                 showBoat();
             }
         
@@ -340,17 +340,18 @@ function updateBoatPosition() {
 }
 
 function boatClicked() {
-    const rewardChance = Math.random();
+    const rewardChance = Math.floor(Math.random() * 100) + 1;
+    const twitterShareUrl = `https://twitter.com/intent/tweet?text=Yes%20!%20I%20got%20my%20raffle%20ticket%20for%20the%20EV3%20exclusive%20prize!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
     let message = '';
     let icon = 'info';
     let imageUrl = null; 
     let winSound = new Audio('/img/win.wav');
     let rewardReceived = false; 
 
-    if (rewardChance < 5) {
+    if (rewardChance < 50) {
         message = 'Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You dont need to do anything further for now. Continue your search for the whitelist!';
         icon = 'success';
-        imageUrl = '/img/special.png';
+        imageUrl = '/img/special2.png';
         winSound.play();
         rewardReceived = true;
     } else {
@@ -358,11 +359,13 @@ function boatClicked() {
         icon = 'error';
     }
     
+    console.log("Logging user_id:", window.userId); 
+    console.log("Logging number:", rewardChance); 
+
     if (rewardReceived) {
         axios.post('/recordReward', {
-            user_id: "{{ Auth::user()->id }}", 
+            user_id: window.userId, 
             reward_type: "special",
-            _token: "{{ csrf_token() }}" // Add this line
         })
         .then(response => {
             if (response.data.success) {
@@ -382,13 +385,19 @@ function boatClicked() {
         text: message,
         imageUrl: imageUrl,
         background: 'black',
-        confirmButtonText: 'OK',
-        confirmButtonColor: '#000000',
+        showConfirmButton: false,  // This will hide the default OK button
         customClass: {
             title: 'custom-title-color',
             htmlContainer: 'custom-text-color',
         },
+        html: `
+            Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You don't need to do anything further for now. Continue your search for the whitelist!
+            <br><br>
+            <a href="${twitterShareUrl}" target="_blank">
+                <button class="swal2-confirm swal2-styled" style="background-color: red;">Share</button>
+            </a>`
     });
+
 
     // Hide the boat
     const boatElement = document.getElementById('boat');
@@ -547,7 +556,3 @@ window.onload = function () {
   var countEL = document.getElementById("count");
   var waterEl = document.getElementById("water");
 };
-
-
-
-
