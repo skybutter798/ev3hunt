@@ -24,6 +24,7 @@
     <meta name="twitter:title" content="EV3 HUNT">
     <meta name="twitter:description" content="Join the EV3 Treasure Hunt and embark on a thrilling adventure! Dive deep into the grid, click to uncover hidden treasures, and secure your spot on the whitelist.">
     <meta name="twitter:image" content="https://hunt.ev3nft.xyz/img/evwhitelist.png">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">

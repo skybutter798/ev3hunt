@@ -1,4 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
+    const music = document.getElementById('backgroundMusic');
+    const muteButton = document.getElementById('muteButton');
+    const playMusicButton = document.getElementById('playMusicButton');
+
+    playMusicButton.addEventListener('click', function() {
+        music.play();
+        playMusicButton.style.display = 'none'; // Hide the play button after clicking
+        muteButton.style.display = 'block';
+    });
+
+    muteButton.addEventListener('click', function() {
+        if (music.muted) {
+            music.muted = false;
+            muteButton.textContent = 'Mute';
+        } else {
+            music.muted = true;
+            muteButton.textContent = 'Unmute';
+        }
+    });
+
     const gridItems = document.querySelectorAll('.grid-item');
 
     gridItems.forEach(item => {
@@ -10,52 +30,83 @@ document.addEventListener('DOMContentLoaded', function () {
     
     const userWalletAddress = document.getElementById('userWalletAddress');
     
-    if (userWalletAddress && userWalletAddress.textContent) {
+   if (userWalletAddress && userWalletAddress.textContent) {
         // Display the SweetAlert message
         Swal.fire({
             title: 'Whitelisted!',
-            html: `You've already found your spot! Make sure to follow EV3 or join discord to get updates! Your wallet address is: <br> <strong>${userWalletAddress.textContent}</strong>`,
+            html: `
+                You've already found your spot! Make sure to follow EV3 or join discord to get updates! 
+                Your wallet address is: <br><br> <strong>${userWalletAddress.textContent}</strong>
+                <br><br>
+                
+            `,
             icon: 'info',
-            allowOutsideClick: false, // Prevent closing the alert by clicking outside
-            allowEscapeKey: false,    // Prevent closing the alert using the escape key
+            allowOutsideClick: false,
+            allowEscapeKey: false,
             showConfirmButton: false
-        });
+        })
+        
+        /*.then(() => {
+            console.log("A");
+            const swalLogoutButton = document.getElementById('swal-logout-button');
+            console.log("B");
+            if (swalLogoutButton) {
+                console.log("C");
+                swalLogoutButton.addEventListener('click', function() {
+                    // Send a POST request to the logout route
+                    axios.post(window.logoutRoute, {}, {
+                        headers: {
+                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                        }
+                    })
 
-
+                    .then(response => {
+                        // Redirect the user after a successful logout
+                        window.location.href = '/'; // Redirect to the homepage or any other page
+                    })
+                    .catch(error => {
+                        console.error('Error logging out:', error);
+                    });
+                });
+            }
+        });*/
+    
         // Fade out the main container
         const mainContainer = document.querySelector('.main-container');
         mainContainer.style.opacity = '0.5';
         mainContainer.style.pointerEvents = 'none'; // Disable all interactions
-
+    
         // Enable only the logout button
         const logoutButton = document.querySelector('.twitter-login');
         if (logoutButton) {
             logoutButton.style.pointerEvents = 'auto';
         }
+    } else {
+        const npcContainer = document.getElementById('npcContainer');
+        const closeNpcButton = document.getElementById('closeNpc');
+        const mainContainer = document.querySelector('.main-container');
+    
+        // Initially, disable the main content
+        mainContainer.style.opacity = '0.2';
+        mainContainer.style.pointerEvents = 'none';
+    
+        closeNpcButton.addEventListener('click', function() {
+            // Hide the NPC and enable the main content
+            npcContainer.style.display = 'none';
+            mainContainer.style.opacity = '1';
+            mainContainer.style.pointerEvents = 'auto';
+        });
+    
+        // Randomly decide whether to show the boat
+        const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+            if (randomNumber <= 10) {
+                showBoat();
+            }
+        
+        bubbleClicked();
     }
     
-    const npcContainer = document.getElementById('npcContainer');
-    const closeNpcButton = document.getElementById('closeNpc');
-    const mainContainer = document.querySelector('.main-container');
-
-    // Initially, disable the main content
-    mainContainer.style.opacity = '0.2';
-    mainContainer.style.pointerEvents = 'none';
-
-    closeNpcButton.addEventListener('click', function() {
-        // Hide the NPC and enable the main content
-        npcContainer.style.display = 'none';
-        mainContainer.style.opacity = '1';
-        mainContainer.style.pointerEvents = 'auto';
-    });
-
-    // Randomly decide whether to show the boat
-    const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-        if (randomNumber <= 5) {
-            showBoat();
-        }
     
-    bubbleClicked();
 });
 
 
@@ -279,7 +330,7 @@ function boatClicked() {
     let message = '';
     let icon = 'info';
 
-    if (rewardChance < 0.5) {
+    if (rewardChance < 5) {
         message = 'Congratulations! You found a special reward!';
         icon = 'success';
         // Give a special reward
@@ -325,7 +376,7 @@ function firstMessage() {
     Swal.fire({
         title: 'Treasure Hunt',
         text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 250 x 250 grid and brace yourself for a journey like no other.',
-        imageUrl: '/img/whitelist.png',
+        imageUrl: '/img/whitelist.png?v1',
         imageAlt: 'EV3 Hunt',
         showCancelButton: true,
         confirmButtonText: 'Next',
@@ -357,7 +408,7 @@ function secondMessage() {
     Swal.fire({
         title: 'Island Secrets',
         text: 'Within this expansive realm, the unexpected awaits you. Some squares might hide coveted whitelist spots, while others guard hidden treasures or elusive tickets. And sometimes, the grid may just test your patience with an empty spot, leaving your fate in the hands of luck.',
-        imageUrl: '/img/reward.png',
+        imageUrl: '/img/reward.png?v1',
         imageAlt: 'Rewards',
         showCancelButton: true,
         confirmButtonText: 'Next',
@@ -389,7 +440,7 @@ function thirdMessage() {
     Swal.fire({
         title: 'The Island’s Generosity',
         text: 'By connecting with your Twitter, the island grants you the power of 2 clicks each day. As the clock resets at GMT+8 00:00, so do your chances. And if you ever find yourself eager for just one more chance, spread word of our land on Twitter, and an additional click shall be bestowed upon you.',
-        imageUrl: '/img/twittershare.png',
+        imageUrl: '/img/twittershare.png?v1',
         imageAlt: 'Clicking Life',
         showCancelButton: true,
         confirmButtonText: 'Next',
@@ -421,7 +472,7 @@ function fourthMessage() {
     Swal.fire({
         title: 'Whispers of the Wind',
         text: 'Always be on your guard, adventurer. The winds whisper of surprise events that might come your way. Our islands story unfolds on Twitter, so stay close and listen well. So, are you ready to test your mettle and seek out the treasures that await? The Island beckons! 🏝🔍🎁',
-        imageUrl: '/img/bluecode.png',
+        imageUrl: '/img/bluecode.png?v1',
         imageAlt: 'EV3 Blue Code',
         confirmButtonText: 'Ahoy!',
         confirmButtonColor: '#f53636',
@@ -443,3 +494,9 @@ function fourthMessage() {
         }
     });
 }
+
+window.onload = function () {
+  var countEL = document.getElementById("count");
+  var waterEl = document.getElementById("water");
+};
+
