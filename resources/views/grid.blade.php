@@ -66,9 +66,11 @@
     
 </div>
 <script>window.logoutRoute = '{{ route('logout') }}';</script>
+
 @if(Auth::check())
 <script>window.userId = @json(Auth::user()->id);</script>
 @endif
+
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="/js/app.js?v={{ filemtime(public_path('/js/app.js')) }}"></script>

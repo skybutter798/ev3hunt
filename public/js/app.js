@@ -108,11 +108,15 @@ document.addEventListener('DOMContentLoaded', function () {
             mainContainer.style.pointerEvents = 'auto';
         });
     
-        // Randomly decide whether to show the boat
-        const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+        // Check if userId exists (i.e., the user is authenticated)
+        if (window.userId) {
+            // Randomly decide whether to show the boat
+            const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
             if (randomNumber <= 10) {
                 showBoat();
             }
+        }
+
         
         bubbleClicked();
     }
@@ -377,26 +381,47 @@ function boatClicked() {
         .catch(error => {
             console.error("Error recording the reward:", error);
         });
+        
+        // Display the popout message
+        Swal.fire({
+            title: 'Flying Code',
+            text: message,
+            imageUrl: imageUrl,
+            background: 'black',
+            showConfirmButton: false,  // This will hide the default OK button
+            customClass: {
+                title: 'custom-title-color',
+                htmlContainer: 'custom-text-color',
+            },
+            html: `
+                Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You don't need to do anything further for now. Continue your search for the whitelist!
+                <br><br>
+                <a href="${twitterShareUrl}" target="_blank">
+                    <button class="swal2-confirm swal2-styled" style="background-color: red;">Share</button>
+                </a>`
+        });
+    } else {
+        // Display the popout message
+        Swal.fire({
+            title: 'Flying Code',
+            text: message,
+            imageUrl: imageUrl,
+            background: 'black',
+            showConfirmButton: false,  // This will hide the default OK button
+            customClass: {
+                title: 'custom-title-color',
+                htmlContainer: 'custom-text-color',
+            },
+            html: `
+                Sorry, no reward this time..You don't need to do anything further for now. Continue your search for the whitelist!
+                <br><br>
+                <a href="${twitterShareUrl}" target="_blank">
+                    <button class="swal2-confirm swal2-styled" style="background-color: red;">Share</button>
+                </a>`
+        });
     }
 
-    // Display the popout message
-    Swal.fire({
-        title: 'Flying Code',
-        text: message,
-        imageUrl: imageUrl,
-        background: 'black',
-        showConfirmButton: false,  // This will hide the default OK button
-        customClass: {
-            title: 'custom-title-color',
-            htmlContainer: 'custom-text-color',
-        },
-        html: `
-            Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You don't need to do anything further for now. Continue your search for the whitelist!
-            <br><br>
-            <a href="${twitterShareUrl}" target="_blank">
-                <button class="swal2-confirm swal2-styled" style="background-color: red;">Share</button>
-            </a>`
-    });
+    
 
 
     // Hide the boat
@@ -425,7 +450,7 @@ function firstMessage() {
     
     Swal.fire({
         title: 'Treasure Hunt',
-        text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 250 x 250 grid and brace yourself for a journey like no other.',
+        text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 50 x 50 grid and brace yourself for a journey like no other.',
         imageUrl: '/img/whitelist.png?v1',
         imageAlt: 'EV3 Hunt',
         showCancelButton: true,

@@ -20,7 +20,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islands.png') no-repeat center center;
+        background: url('/img/islandv3.png') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -96,7 +96,7 @@
     }
     
     .custom-swal {
-        background-image: url('/img/islands.png');
+        background-image: url('/img/islandv3.png');
         background-size: cover;
     }
     
