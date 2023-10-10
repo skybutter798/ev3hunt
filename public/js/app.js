@@ -8,6 +8,17 @@ document.addEventListener('DOMContentLoaded', function () {
         playMusicButton.style.display = 'none'; // Hide the play button after clicking
         muteButton.style.display = 'block';
     });
+    
+    let clickSound = new Audio('/img/click.wav');
+
+    // Add event listener to elements with the 'play-sound' class
+    const soundElements = document.querySelectorAll('.play-sound');
+    soundElements.forEach(element => {
+        element.addEventListener('click', function() {
+            clickSound.currentTime = 0;
+            clickSound.play();
+        });
+    });
 
     muteButton.addEventListener('click', function() {
         if (music.muted) {
@@ -99,7 +110,7 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Randomly decide whether to show the boat
         const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-            if (randomNumber <= 10) {
+            if (randomNumber <= 90) {
                 showBoat();
             }
         
@@ -114,6 +125,9 @@ function checkGrid(gridId) {
     const gridElement = document.querySelector(`.grid-item[data-id="${gridId}"]`);
     const remainingClicksDiv = document.getElementById('remainingClicksDiv');
     let remainingClicks = parseInt(remainingClicksDiv.textContent.match(/\d+/)[0]);
+    let shareSound = new Audio('/img/share.wav');
+    let winSound = new Audio('/img/win.wav');
+    let coinSound = new Audio('/img/coin.wav');
 
     axios.post('/checkGrid', { id: gridId })
     .then(response => {
@@ -140,6 +154,7 @@ function checkGrid(gridId) {
             document.querySelector('.swal2-confirm').addEventListener('click', function() {
                 remainingClicks++;
                 remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
+                shareSound.play();
                 axios.post('/updateStatus')
                 .then(response => {
                     console.log(response.data.message); // Log the response for debugging
@@ -156,7 +171,7 @@ function checkGrid(gridId) {
                     console.error("Error updating share status:", error);
                 });
             });
-        };
+        }
 
         
         if (response.data.message === 'shared') {
@@ -174,14 +189,14 @@ function checkGrid(gridId) {
             };
 
             Swal.fire(swalConfig);
-        };
+        }
         
         if (response.data.message === 'reward') {
             const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
             gridElement.classList.add('reward-found');
-            // Decrement and update the remaining clicks
             remainingClicks--;
             remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
+            winSound.play();
         
             let swalConfig = {
                 title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
@@ -222,10 +237,10 @@ function checkGrid(gridId) {
                         const mainContainer = document.querySelector('.main-container');
                         mainContainer.style.opacity = '0.5';
                         mainContainer.style.pointerEvents = 'none'; // Disable all interactions
-                    });;
+                    });
                 }
             });
-        };
+        }
         
         if (response.data.message === 'cash') {
             const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20gold%20in%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
@@ -233,14 +248,14 @@ function checkGrid(gridId) {
             // Decrement and update the remaining clicks
             remainingClicks--;
             remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
-        
+            coinSound.play();
             let swalConfig = {
                 title: 'Cash Grabber',
                 showConfirmButton: false,
                 html: `Congratulations! You have snagged a cash grab of $5! Keep hunting for a whitelist spot to secure your wallet. And dont fret if you dont find it immediately; we will prompt you to provide your wallet address at the game conclusion.`
             };
             Swal.fire(swalConfig);
-        };
+        }
 
         
         if (response.data.message === 'none') {
@@ -325,30 +340,54 @@ function updateBoatPosition() {
 }
 
 function boatClicked() {
-    // Determine the outcome when the boat is clicked
     const rewardChance = Math.random();
     let message = '';
     let icon = 'info';
+    let imageUrl = null; 
+    let winSound = new Audio('/img/win.wav');
+    let rewardReceived = false; 
 
     if (rewardChance < 5) {
-        message = 'Congratulations! You found a special reward!';
+        message = 'Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You dont need to do anything further for now. Continue your search for the whitelist!';
         icon = 'success';
-        // Give a special reward
-        // ... your code to handle the reward ...
+        imageUrl = '/img/special.png';
+        winSound.play();
+        rewardReceived = true;
     } else {
         message = 'Sorry, no reward this time.';
         icon = 'error';
-        // No reward
-        // ... your code to handle the absence of a reward ...
+    }
+    
+    if (rewardReceived) {
+        axios.post('/recordReward', {
+            user_id: "{{ Auth::user()->id }}", 
+            reward_type: "special",
+            _token: "{{ csrf_token() }}" // Add this line
+        })
+        .then(response => {
+            if (response.data.success) {
+                console.log("Reward recorded successfully!");
+            } else {
+                console.error("Failed to record the reward.");
+            }
+        })
+        .catch(error => {
+            console.error("Error recording the reward:", error);
+        });
     }
 
     // Display the popout message
     Swal.fire({
-        title: 'Flying Bird Clicked!',
+        title: 'Flying Code',
         text: message,
-        icon: icon,
+        imageUrl: imageUrl,
+        background: 'black',
         confirmButtonText: 'OK',
         confirmButtonColor: '#000000',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
     });
 
     // Hide the boat
@@ -373,6 +412,8 @@ function bubbleClicked() {
 }
 
 function firstMessage() {
+    let closeSound = new Audio('/img/close.wav');
+    
     Swal.fire({
         title: 'Treasure Hunt',
         text: 'Ahoy, adventurer! Welcome to the Island Treasure Hunt. Set your sights on our vast 250 x 250 grid and brace yourself for a journey like no other.',
@@ -394,6 +435,7 @@ function firstMessage() {
             secondMessage();
         } else if (result.isDismissed) {
             // This will run when the "Exit" button is clicked
+            closeSound.play();
             const npcContainer = document.getElementById('npcContainer');
             const mainContainer = document.querySelector('.main-container');
             
@@ -405,6 +447,7 @@ function firstMessage() {
 }
 
 function secondMessage() {
+    let closeSound = new Audio('/img/close.wav');
     Swal.fire({
         title: 'Island Secrets',
         text: 'Within this expansive realm, the unexpected awaits you. Some squares might hide coveted whitelist spots, while others guard hidden treasures or elusive tickets. And sometimes, the grid may just test your patience with an empty spot, leaving your fate in the hands of luck.',
@@ -426,6 +469,7 @@ function secondMessage() {
             thirdMessage();
         } else if (result.isDismissed) {
             // This will run when the "Exit" button is clicked
+            closeSound.play();
             const npcContainer = document.getElementById('npcContainer');
             const mainContainer = document.querySelector('.main-container');
             
@@ -437,6 +481,7 @@ function secondMessage() {
 }
 
 function thirdMessage() {
+    let closeSound = new Audio('/img/close.wav');
     Swal.fire({
         title: 'The Island’s Generosity',
         text: 'By connecting with your Twitter, the island grants you the power of 2 clicks each day. As the clock resets at GMT+8 00:00, so do your chances. And if you ever find yourself eager for just one more chance, spread word of our land on Twitter, and an additional click shall be bestowed upon you.',
@@ -458,6 +503,7 @@ function thirdMessage() {
             fourthMessage();
         } else if (result.isDismissed) {
             // This will run when the "Exit" button is clicked
+            closeSound.play();
             const npcContainer = document.getElementById('npcContainer');
             const mainContainer = document.querySelector('.main-container');
             
@@ -469,6 +515,7 @@ function thirdMessage() {
 }
 
 function fourthMessage() {
+    let closeSound = new Audio('/img/close.wav');
     Swal.fire({
         title: 'Whispers of the Wind',
         text: 'Always be on your guard, adventurer. The winds whisper of surprise events that might come your way. Our islands story unfolds on Twitter, so stay close and listen well. So, are you ready to test your mettle and seek out the treasures that await? The Island beckons! 🏝🔍🎁',
@@ -485,6 +532,7 @@ function fourthMessage() {
     }).then((result) => {
         if (result.isConfirmed) {
             // This will run when the "Exit" button is clicked
+            closeSound.play();
             const npcContainer = document.getElementById('npcContainer');
             const mainContainer = document.querySelector('.main-container');
             
@@ -499,4 +547,7 @@ window.onload = function () {
   var countEL = document.getElementById("count");
   var waterEl = document.getElementById("water");
 };
+
+
+
 

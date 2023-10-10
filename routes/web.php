@@ -15,3 +15,4 @@ Route::get('login/twitter/callback', [AuthController::class, 'handleTwitterCallb
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/wallet', [GameController::class, 'saveWalletAddress'])->middleware('auth');
 Route::post('/updateStatus', [GameController::class, 'updateStatus']);
+Route::post('/recordReward', [GameController::class, 'recordReward']);

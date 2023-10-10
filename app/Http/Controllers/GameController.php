@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use Illuminate\Support\Facades\Log;
+use App\Models\Reward;
 
 class GameController extends Controller
 {
@@ -122,6 +123,28 @@ class GameController extends Controller
         $user->save();
     
         return response()->json(['success' => true, 'message' => 'Wallet address saved successfully!']);
+    }
+    
+    public function recordReward(Request $request) {
+        try {
+            $userId = $request->input('user_id');
+            $rewardType = $request->input('reward_type');
+
+            if (Auth::id() == $userId) {
+                DB::table('rewards')->insert([
+                    'user_id' => $userId,
+                    'reward_type' => $rewardType,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                return response()->json(['success' => true, 'message' => 'Reward recorded successfully']);
+            } else {
+                return response()->json(['success' => false, 'message' => 'Unauthorized action'], 403);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error recording the reward: ' . $e->getMessage()], 500);
+        }
     }
 
 }

@@ -47,7 +47,7 @@
                     You have {{ $remainingClicks }} clicks left for today.
                 </div>
             @endif
-            <button id="bubble" onclick="bubbleClicked()" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Info</button>
+            <button id="bubble" onclick="bubbleClicked()" class="play-sound" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Info</button>
             <button id="playMusicButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Music</button>
             <button id="muteButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin; display:none">Mute</button>
         </div>
@@ -56,7 +56,7 @@
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
         <img src="/img/bubble.png" id="boat" style="display: none; position: absolute; width:20px" onclick="boatClicked()">
         @foreach ($grids as $grid)
-            <div class="grid-item {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
+            <div class="grid-item play-sound {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
                 @if ($grid->reward_item_id)
                     <!-- Display a gift icon for grid items with a reward -->
                 @endif
