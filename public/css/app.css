@@ -20,7 +20,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islandv3.png') no-repeat center center;
+        background: url('/img/islandv4.png') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -39,7 +39,7 @@
         }
     
         &.clicked {
-            background-color: black;
+            background-color: rgba(0,0,0,0.3);
             pointer-events: auto;
         }
     
@@ -96,7 +96,7 @@
     }
     
     .custom-swal {
-        background-image: url('/img/islandv3.png');
+        background-image: url('/img/islandv4.png');
         background-size: cover;
     }
     
@@ -163,7 +163,6 @@
     .custom-title-color {
         color: #2798f3 !important; 
     }
-    
     
     .box {
       height: 50px;

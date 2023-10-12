@@ -16,3 +16,4 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/wallet', [GameController::class, 'saveWalletAddress'])->middleware('auth');
 Route::post('/updateStatus', [GameController::class, 'updateStatus']);
 Route::post('/recordReward', [GameController::class, 'recordReward']);
+Route::get('/checkWinStatus', [GameController::class, 'checkWinStatus']);

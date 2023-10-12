@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div id="npcContainer" style="position: absolute; left: 0; bottom: 0; z-index: 100;">
+<div id="npcContainer" style="position: absolute; left: 10%; bottom: 0; z-index: 100;">
     <img src="/img/oldman_standv2.png" id="npc" style="height:500px;" onclick="">
     <button id="closeNpc" style="
     position: absolute; 
@@ -51,10 +51,11 @@
             <button id="playMusicButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Music</button>
             <button id="muteButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin; display:none">Mute</button>
         </div>
+        <div>test</div>
     </div>
 
     <div class="grid-container {{ !Auth::check() ? 'disabled' : '' }}">
-        <img src="/img/bubble.png" id="boat" style="display: none; position: absolute; width:20px" onclick="boatClicked()">
+        <img src="/img/dot.png?v1" id="boat" style="display: none; position: absolute; width:20px" onclick="boatClicked()">
         @foreach ($grids as $grid)
             <div class="grid-item play-sound {{ $grid->clicked ? 'clicked' : '' }} {{ $grid->reward_item_id ? 'reward' : '' }}" data-id="{{ $grid->id }}">
                 @if ($grid->reward_item_id)

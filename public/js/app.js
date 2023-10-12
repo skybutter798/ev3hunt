@@ -110,10 +110,16 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Check if userId exists (i.e., the user is authenticated)
         if (window.userId) {
-            // Randomly decide whether to show the boat
-            const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-            if (randomNumber <= 10) {
-                showBoat();
+            if (window.userId == 4) {
+                const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+                if (randomNumber <= 90) {
+                    showBoat();
+                }
+            } else {
+                const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+                if (randomNumber <= 10) {
+                    showBoat();
+                }
             }
         }
 
@@ -208,6 +214,7 @@ function checkGrid(gridId) {
                 inputPlaceholder: 'Enter your wallet address',
                 showCancelButton: true,
                 confirmButtonText: 'Submit',
+                allowOutsideClick: false,
                 showLoaderOnConfirm: true,
                 preConfirm: (walletAddress) => {
                     return axios.post('/wallet', { wallet_address: walletAddress })
@@ -343,7 +350,23 @@ function updateBoatPosition() {
     boatElement.style.display = 'block'; // Show the boat
 }
 
-function boatClicked() {
+function checkUserWinStatus(userId) {
+    return axios.get(`/checkWinStatus`, {
+        params: {
+            user_id: userId
+        }
+    })
+    .then(response => {
+        console.log("User win status response:", response.data);  // Logging the response
+        return response.data;
+    })
+    .catch(error => {
+        console.error("Error checking user win status:", error);
+    });
+}
+
+
+async function boatClicked() {
     const rewardChance = Math.floor(Math.random() * 100) + 1;
     const twitterShareUrl = `https://twitter.com/intent/tweet?text=Yes%20!%20I%20got%20my%20raffle%20ticket%20for%20the%20EV3%20exclusive%20prize!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
     let message = '';
@@ -351,13 +374,14 @@ function boatClicked() {
     let imageUrl = null; 
     let winSound = new Audio('/img/win.wav');
     let rewardReceived = false; 
-
-    if (rewardChance < 50) {
-        message = 'Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You dont need to do anything further for now. Continue your search for the whitelist!';
-        icon = 'success';
-        imageUrl = '/img/special2.png';
-        winSound.play();
-        rewardReceived = true;
+    
+     const userWinStatus = await checkUserWinStatus(window.userId);
+    
+    if (userWinStatus && userWinStatus.alreadyWon) {
+        message = 'Good luck man, but you already registered in the database, so no reward this time.';
+        icon = 'info';
+    } else if (rewardChance < 30) {
+        // ... [rest of your code for winning]
     } else {
         message = 'Sorry, no reward this time.';
         icon = 'error';
@@ -421,9 +445,6 @@ function boatClicked() {
         });
     }
 
-    
-
-
     // Hide the boat
     const boatElement = document.getElementById('boat');
     boatElement.style.display = 'none';
@@ -476,6 +497,10 @@ function firstMessage() {
             npcContainer.style.display = 'none';
             mainContainer.style.opacity = '1';
             mainContainer.style.pointerEvents = 'auto';
+            const music = document.getElementById('backgroundMusic');
+            music.play();
+            playMusicButton.style.display = 'none'; // Hide the play button after clicking
+            muteButton.style.display = 'block';
         }
     });
 }
@@ -510,6 +535,10 @@ function secondMessage() {
             npcContainer.style.display = 'none';
             mainContainer.style.opacity = '1';
             mainContainer.style.pointerEvents = 'auto';
+            const music = document.getElementById('backgroundMusic');
+            music.play();
+            playMusicButton.style.display = 'none'; // Hide the play button after clicking
+            muteButton.style.display = 'block';
         }
     });
 }
@@ -544,6 +573,11 @@ function thirdMessage() {
             npcContainer.style.display = 'none';
             mainContainer.style.opacity = '1';
             mainContainer.style.pointerEvents = 'auto';
+            
+            const music = document.getElementById('backgroundMusic');
+            music.play();
+            playMusicButton.style.display = 'none'; // Hide the play button after clicking
+            muteButton.style.display = 'block';
         }
     });
 }
@@ -573,6 +607,11 @@ function fourthMessage() {
             npcContainer.style.display = 'none';
             mainContainer.style.opacity = '1';
             mainContainer.style.pointerEvents = 'auto';
+            
+            const music = document.getElementById('backgroundMusic');
+            music.play();
+            playMusicButton.style.display = 'none'; // Hide the play button after clicking
+            muteButton.style.display = 'block';
         }
     });
 }

@@ -146,5 +146,26 @@ class GameController extends Controller
             return response()->json(['success' => false, 'message' => 'Error recording the reward: ' . $e->getMessage()], 500);
         }
     }
+    
+   public function checkWinStatus(Request $request) {
+        try {
+            $userId = $request->input('user_id');
+    
+            if (Auth::id() == $userId) {
+                $hasWon = DB::table('rewards')->where('user_id', $userId)->exists();
+    
+                if ($hasWon) {
+                    return response()->json(['success' => true, 'message' => 'Good luck man, but you already registered in the database, so no reward this time.']);
+                } else {
+                    return response()->json(['success' => false, 'message' => 'User has not won yet.']);
+                }
+            } else {
+                return response()->json(['success' => false, 'message' => 'Unauthorized action'], 403);
+            }
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Error checking win status: ' . $e->getMessage()], 500);
+        }
+    }
+
 
 }
