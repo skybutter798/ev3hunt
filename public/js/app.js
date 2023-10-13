@@ -381,7 +381,11 @@ async function boatClicked() {
         message = 'Good luck man, but you already registered in the database, so no reward this time.';
         icon = 'info';
     } else if (rewardChance < 30) {
-        // ... [rest of your code for winning]
+        message = 'Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You dont need to do anything further for now. Continue your search for the whitelist!';
+        icon = 'success';
+        imageUrl = '/img/special2.png';
+        winSound.play();
+        rewardReceived = true;
     } else {
         message = 'Sorry, no reward this time.';
         icon = 'error';

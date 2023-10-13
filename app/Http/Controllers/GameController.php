@@ -36,6 +36,30 @@ class GameController extends Controller
         $grids = Grid::all();
         return view('grid', compact('grids', 'remainingClicks'));
     }
+    
+    public function beta()
+    {
+        $remainingClicks = 0; // Default value
+    
+        if (Auth::check()) {
+            $user = Auth::user();
+    
+            // Check how many grids the user has clicked today
+            $todayClicks = DB::table('grids')
+                         ->where('user_id', $user->id)
+                         ->whereDate('updated_at', Carbon::now('Asia/Kuala_Lumpur')->toDateString())
+                         ->count();
+                         
+            if ($todayClicks >2){
+                $remainingClicks = 0;
+            } else {
+                $remainingClicks = 2 - $todayClicks;
+            }
+        }
+    
+        $grids = Grid::all();
+        return view('beta', compact('grids', 'remainingClicks'));
+    }
 
 
     public function checkGrid(Request $request)
@@ -115,7 +139,7 @@ class GameController extends Controller
     public function saveWalletAddress(Request $request)
     {
         $request->validate([
-            'wallet_address' => 'required|string|max:255', // You can adjust the validation rules as needed
+            'wallet_address' => 'required|string|regex:/^0x[a-fA-F0-9]{40}$/'
         ]);
     
         $user = Auth::user();
@@ -166,6 +190,24 @@ class GameController extends Controller
             return response()->json(['success' => false, 'message' => 'Error checking win status: ' . $e->getMessage()], 500);
         }
     }
+    
+    public function watercave()
+    {
+        $user = Auth::user(); // Get the currently authenticated user
+    
+        // Check the watercave status
+        $hasJoined = $user->watercave == 1;
+    
+        return view('watercave', ['hasJoined' => $hasJoined]);
+    }
 
-
+    
+    public function updateWatercave(Request $request) {
+        $user = Auth::user();
+    
+        $user->watercave = 1; 
+        $user->save();
+    
+        return response()->json(['success' => true, 'message' => 'Watercave status updated successfully']);
+    }
 }

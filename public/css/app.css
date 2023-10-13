@@ -20,7 +20,7 @@
         max-width: 1000px; /* 50 boxes * 20px each */
         max-height: 1000px; /* 50 boxes * 20px each */
         overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islandv4.png') no-repeat center center;
+        background: url('/img/islandv5.png?v3') no-repeat center center;
         background-size: cover;
         background-attachment: local;
         position: relative;
@@ -29,7 +29,7 @@
     .grid-item {
         width: 100%;
         height: 100%;
-        border: 1px solid #ddd;
+        border: 1px solid #888;
         background-color: rgba(255,255,255,0.1);
         transition: background-color 0.3s;
     
@@ -39,7 +39,7 @@
         }
     
         &.clicked {
-            background-color: rgba(0,0,0,0.3);
+            background-color: rgba(0,0,0,0.4);
             pointer-events: auto;
         }
     
@@ -96,7 +96,7 @@
     }
     
     .custom-swal {
-        background-image: url('/img/islandv4.png');
+        background-image: url('/img/islandv5.png?v3');
         background-size: cover;
     }
     
