@@ -2,20 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Models\Grid;
+use App\Models\Reward;
 use Illuminate\Support\Facades\Auth;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Abraham\TwitterOAuth\TwitterOAuth;
 use Illuminate\Support\Facades\Log;
-use App\Models\Reward;
+
 
 class GameController extends Controller
 {
     public function index()
     {
         $remainingClicks = 0; // Default value
+        $remain = \App\Models\Grid::where('clicked', 0)->where('reward_item_id', 1)->get();
+        $password = config('assets.password');
     
         if (Auth::check()) {
             $user = Auth::user();
@@ -34,12 +37,13 @@ class GameController extends Controller
         }
     
         $grids = Grid::all();
-        return view('grid', compact('grids', 'remainingClicks'));
+        return view('grid', compact('grids', 'remainingClicks', 'remain', 'password'));
     }
     
     public function beta()
     {
         $remainingClicks = 0; // Default value
+        $remain = \App\Models\Grid::where('clicked', 0)->where('reward_item_id', 1)->get();
     
         if (Auth::check()) {
             $user = Auth::user();
@@ -58,7 +62,7 @@ class GameController extends Controller
         }
     
         $grids = Grid::all();
-        return view('beta', compact('grids', 'remainingClicks'));
+        return view('beta', compact('grids', 'remainingClicks', 'remain'));
     }
 
 
@@ -89,7 +93,11 @@ class GameController extends Controller
             return response()->json(['message' => 'repeat']);
         }
     
-        $grid->clicked = true;
+        $hasWalletAddress = $request->input('hasWalletAddress');
+
+        if (!$hasWalletAddress) {
+            $grid->clicked = true;
+        }
         $grid->user_id = Auth::id();
         $grid->save();
         if ($user->share == 1) {

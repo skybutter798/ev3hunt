@@ -1,235 +1,230 @@
 /* Reset default styles and fill the viewport */
-    html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        width: 100%;
-        background-color: black; /* Set background to black */
-        display: flex; /* Flexbox for centering */
-        align-items: center; /* Vertical centering */
-        justify-content: center; /* Horizontal centering */
-        font-family: Arial, sans-serif;
-    }
-    
-    /* Adjust grid-container to fill the screen */
-    .grid-container {
-        display: grid;
-        grid-template-columns: repeat(50, 20px); /* Set to a fixed value for square boxes */
-        grid-template-rows: repeat(50, 20px); /* Same fixed value for square boxes */
-        gap: 1px;
-        max-width: 1000px; /* 50 boxes * 20px each */
-        max-height: 1000px; /* 50 boxes * 20px each */
-        overflow-y: auto; /* Make it vertically scrollable */
-        background: url('/img/islandv5.png?v3') no-repeat center center;
-        background-size: cover;
-        background-attachment: local;
-        position: relative;
-    }
-    
-    .grid-item {
-        width: 100%;
-        height: 100%;
-        border: 1px solid #888;
-        background-color: rgba(255,255,255,0.1);
-        transition: background-color 0.3s;
-    
-        &:hover {
-            background-color: rgba(238,238,238,0.5);
-            cursor: pointer;
-        }
-    
-        &.clicked {
-            background-color: rgba(0,0,0,0.4);
-            pointer-events: auto;
-        }
-    
-        &.reward {
-            /*background-color: rgba(255,217,102,0.5);*/
-        }
-    }
-    /* Styling for the main container */
-    .main-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Center children horizontally */
-        justify-content: center; /* Center children vertically */
-        height: 100vh; /* Take full viewport height */
-    }
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    background-color: black; /* Set background to black */
+    display: flex; /* Flexbox for centering */
+    align-items: center; /* Vertical centering */
+    justify-content: center; /* Horizontal centering */
+    font-family: Arial, sans-serif;
+}
 
-    /* Modify the title-container to use Flexbox */
-    .title-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center; /* Center the title and tagline */
-        position: relative; /* Set to relative to position the Twitter login button */
-        width: 100%;
-    }
+/* Adjust grid-container to fill the screen */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(50, 20px); /* Set to a fixed value for square boxes */
+    grid-template-rows: repeat(50, 20px); /* Same fixed value for square boxes */
+    gap: 1px;
+    max-height: 1000px; /* 50 boxes * 20px each */
+    overflow-y: auto; /* Make it vertically scrollable */
+    overflow-x: hidden; /* Make it vertically scrollable */
+    background: var(--grid-container-bg-image) no-repeat center center;
+    background-size: cover;
+    background-attachment: local;
+    position: relative;
+}
 
-    /* Style for the Twitter login button */
-    .twitter-login {
-        position: absolute; /* Absolute positioning */
-        top: 50%; /* Center it vertically */
-        right: 0; /* Push it to the right */
-        transform: translateY(-50%); /* Adjust for perfect centering */
-        background-color: #1DA1F2;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 20px;
-        text-decoration: none;
-        font-weight: bold;
-        transition: background-color 0.3s;
-    }
 
-    .twitter-login:hover {
-        background-color: #0c85d0;
-    }
 
-    h1 {
-        font-size: 2em;
-        color: #FFFFFF;
-        margin-bottom: 10px; /* Add some space between the title and the tagline */
-    }
+.grid-item {
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--grid-item-border-color);
+    background-color: var(--grid-item-bg-color);
+    transition: background-color 0.3s;
 
-    h3 {
-        font-size: 1.2em;
-        color: #888; /* A lighter color for the tagline */
-    }
-    
-    .custom-swal {
-        background-image: url('/img/islandv5.png?v3');
-        background-size: cover;
-    }
-    
-    .grid-container.disabled .grid-item {
-        pointer-events: none; /* Disables all click events */
-        opacity: 0.5; /* Makes the grid items look faded */
-    }
-    
-    .swal2-actions {
-        flex-direction: row !important;  /* Make buttons stack horizontally */
-        align-items: center;             /* Vertically center align buttons */
-        justify-content: center;        /* Horizontally center align buttons */
-    }
-    
-    .swal2-styled {
-        margin-right: 10px;  /* Add some space between the buttons */
-    }
-    
-    #boat {
-        transition: top 2s, left 2s; /* This will ensure the boat moves smoothly over 2 seconds */
-    }
-    
-    .grid-item:active {
-        transform: scale(0.95); /* Slightly reduce the size of the grid when clicked */
-        transition: transform 0.1s; /* Quick transition for the click effect */
-    }
-
-    .grid-item.reward-found {
-        animation: rewardFound 0.5s forwards; /* Apply the animation named 'rewardFound' */
-    }
-    
-    @keyframes rewardFound {
-        0% {
-            transform: scale(0.5);
-            opacity: 0;
-        }
-        100% {
-            transform: scale(1);
-            opacity: 1;
-        }
-    }
-    
-    .main-container.disabled {
-        opacity: 0.5;
-        pointer-events: none;
-    }
-
-    .npc-icon {
-        width: 100%;
-        height: 100%;
+    &:hover {
+        background-color: var(--grid-item-hover-bg-color);
         cursor: pointer;
-        transition: transform 0.2s;
-        pointer-events: auto; /* Always allow clicking on the NPC */
     }
-    
-    .npc-icon:hover {
-        transform: scale(1.1); /* Slightly enlarge the NPC when hovered */
+
+    &.clicked {
+        background-color: var(--grid-item-clicked-bg-color);
+        pointer-events: auto;
     }
-    
-    .custom-text-color {
-        color: white !important; 
+
+    &.reward {
+        /*background-color: rgba(255,217,102,0.5);*/
     }
-    
-    .custom-title-color {
-        color: #2798f3 !important; 
+}
+
+
+/* Styling for the main container */
+.main-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center children horizontally */
+    justify-content: center; /* Center children vertically */
+    height: 100vh; /* Take full viewport height */
+}
+
+/* Modify the title-container to use Flexbox */
+.title-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Center the title and tagline */
+    position: relative; /* Set to relative to position the Twitter login button */
+    width: 100%;
+    margin-bottom:10px; 
+
+}
+
+/* Style for the Twitter login button */
+.twitter-login {
+    position: absolute; /* Absolute positioning */
+    top: 50%; /* Center it vertically */
+    right: 0; /* Push it to the right */
+    transform: translateY(-50%); /* Adjust for perfect centering */
+    background-color: #1DA1F2;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s;
+}
+
+.twitter-login:hover {
+    background-color: #0c85d0;
+}
+
+h1 {
+    font-size: 2em;
+    color: #FFFFFF;
+    margin-bottom: 10px; /* Add some space between the title and the tagline */
+}
+
+h3 {
+    font-size: 1.2em;
+    color: #888; /* A lighter color for the tagline */
+}
+
+.grid-container.disabled .grid-item {
+    pointer-events: none; /* Disables all click events */
+    opacity: 0.5; /* Makes the grid items look faded */
+}
+
+.custom-swal {
+    background-image: var(--grid-item-bg-image);
+    background-size: cover;
+}
+
+.swal2-actions {
+    flex-direction: row !important;  /* Make buttons stack horizontally */
+    align-items: center;             /* Vertically center align buttons */
+    justify-content: center;        /* Horizontally center align buttons */
+}
+
+.swal2-styled {
+    margin-right: 10px;  /* Add some space between the buttons */
+}
+
+#boat {
+    transition: top 2s, left 2s; /* This will ensure the boat moves smoothly over 2 seconds */
+}
+
+.grid-item:active {
+    transform: scale(0.95); /* Slightly reduce the size of the grid when clicked */
+    transition: transform 0.1s; /* Quick transition for the click effect */
+}
+
+.grid-item.reward-found {
+    animation: rewardFound 0.5s forwards; /* Apply the animation named 'rewardFound' */
+}
+
+@keyframes rewardFound {
+    0% {
+        transform: scale(0.5);
+        opacity: 0;
     }
-    
-    .box {
-      height: 50px;
-      width: 50px;
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #000000;
-      border-radius: 100%;
-      overflow: hidden;
+    100% {
+        transform: scale(1);
+        opacity: 1;
     }
-    .box .percent {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 3;
-      width: 100%;
-      height: 100%;
-      display: -webkit-box;
-      display: -ms-flexbox;
-      display: flex;
-      display: -webkit-flex;
-      align-items: center;
-    
-      justify-content: center;
-      color: #fff;
-      font-size: 64px;
+}
+
+.main-container.disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+
+.npc-icon {
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    pointer-events: auto; /* Always allow clicking on the NPC */
+}
+
+.npc-icon:hover {
+    transform: scale(1.1); /* Slightly enlarge the NPC when hovered */
+}
+
+.custom-text-color {
+    color: white !important; 
+}
+
+.custom-title-color {
+    color: #2798f3 !important; 
+}
+
+/* Stage Two --------------------------------------------------------------- */
+
+.map-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+.upcoming-map {
+    position: absolute;
+    left: 0;
+    background-color: black; /* Overlay with black */
+    pointer-events: none; /* Makes it unclickable */
+    z-index: 1; /* To ensure it overlays the current map */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Center the text inside */
+    color: white; /* Text color */
+    font-size: 24px; /* Adjust as needed */
+    font-weight: bold;
+}
+
+
+.current-map {
+    z-index: 0; /* To ensure it's below the upcoming map */
+}
+
+
+.grid-container-left {
+    display: grid;
+    grid-template-columns: repeat(50, 20px); /* Set to a fixed value for square boxes */
+    grid-template-rows: repeat(50, 20px); /* Same fixed value for square boxes */
+    gap: 1px;
+    max-width: 1000px; /* 50 boxes * 20px each */
+    max-height: 1000px; /* 50 boxes * 20px each */
+    background-size: cover;
+    background-attachment: local;
+    position: relative;
+    background: var(--grid-container-bg-image-left) no-repeat center center;
+}
+
+/* Hide the mobile-only version on desktop */
+@media (min-width: 769px) {
+    .mobile-only {
+        display: none;
     }
-    .box .water {
-      position: absolute;
-      left: 0;
-      top: 0;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-      transform: translate(0, 50%);
-      background: #4d6de3;
+}
+
+/* Hide the desktop version on mobile */
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none;
     }
-    .box .water_wave {
-      width: 200%;
-      position: absolute;
-      bottom: 100%;
+    .grid-container-left {
+        display: none;
     }
-    .box .water_wave_back {
-      right: 0;
-      fill: #c7eeff;
-      animation: moveWaveBack 1.7s linear infinite;
-    }
-    .box .water_wave_front {
-      left: 0;
-      fill: #4d6de3;
-      margin-bottom: -1px;
-      animation: moveWaveFront 0.7s linear infinite;
-    }
-    @keyframes moveWaveBack {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(50%);
-      }
-    }
-    @keyframes moveWaveFront {
-      0% {
-        transform: translateX(0);
-      }
-      100% {
-        transform: translateX(-50%);
-      }
+}

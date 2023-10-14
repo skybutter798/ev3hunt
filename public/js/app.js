@@ -1,101 +1,77 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const music = document.getElementById('backgroundMusic');
-    const muteButton = document.getElementById('muteButton');
-    const playMusicButton = document.getElementById('playMusicButton');
-
-    playMusicButton.addEventListener('click', function() {
-        music.play();
-        playMusicButton.style.display = 'none'; // Hide the play button after clicking
-        muteButton.style.display = 'block';
-    });
+        const music = document.getElementById('backgroundMusic');
+        const muteButton = document.getElementById('muteButton');
+        const playMusicButton = document.getElementById('playMusicButton');
     
-    let clickSound = new Audio('/img/click.wav');
-
-    // Add event listener to elements with the 'play-sound' class
-    const soundElements = document.querySelectorAll('.play-sound');
-    soundElements.forEach(element => {
-        element.addEventListener('click', function() {
-            clickSound.currentTime = 0;
-            clickSound.play();
+        playMusicButton.addEventListener('click', function() {
+            music.play();
+            playMusicButton.style.display = 'none'; // Hide the play button after clicking
+            muteButton.style.display = 'block';
         });
-    });
-
-    muteButton.addEventListener('click', function() {
-        if (music.muted) {
-            music.muted = false;
-            muteButton.textContent = 'Mute';
-        } else {
-            music.muted = true;
-            muteButton.textContent = 'Unmute';
-        }
-    });
-
-    const gridItems = document.querySelectorAll('.grid-item');
-
-    gridItems.forEach(item => {
-        item.addEventListener('click', function() {
-            const gridId = this.getAttribute('data-id');
-            checkGrid(gridId);
-        });
-    });
-    
-    const userWalletAddress = document.getElementById('userWalletAddress');
-    
-   if (userWalletAddress && userWalletAddress.textContent) {
-        // Display the SweetAlert message
-        Swal.fire({
-            title: 'Whitelisted!',
-            html: `
-                You've already found your spot! Make sure to follow EV3 or join discord to get updates! 
-                Your wallet address is: <br><br> <strong>${userWalletAddress.textContent}</strong>
-                <br><br>
-                
-            `,
-            icon: 'info',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            showConfirmButton: false
-        })
         
-        /*.then(() => {
-            console.log("A");
-            const swalLogoutButton = document.getElementById('swal-logout-button');
-            console.log("B");
-            if (swalLogoutButton) {
-                console.log("C");
-                swalLogoutButton.addEventListener('click', function() {
-                    // Send a POST request to the logout route
-                    axios.post(window.logoutRoute, {}, {
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
-                        }
-                    })
-
-                    .then(response => {
-                        // Redirect the user after a successful logout
-                        window.location.href = '/'; // Redirect to the homepage or any other page
-                    })
-                    .catch(error => {
-                        console.error('Error logging out:', error);
-                    });
-                });
+        let clickSound = new Audio('/img/click.wav');
+    
+        // Add event listener to elements with the 'play-sound' class
+        const soundElements = document.querySelectorAll('.play-sound');
+        soundElements.forEach(element => {
+            element.addEventListener('click', function() {
+                clickSound.currentTime = 0;
+                clickSound.play();
+            });
+        });
+    
+        muteButton.addEventListener('click', function() {
+            if (music.muted) {
+                music.muted = false;
+                muteButton.textContent = 'Mute';
+            } else {
+                music.muted = true;
+                muteButton.textContent = 'Unmute';
             }
-        });*/
+        });
     
-        // Fade out the main container
-        const mainContainer = document.querySelector('.main-container');
-        mainContainer.style.opacity = '0.5';
-        mainContainer.style.pointerEvents = 'none'; // Disable all interactions
+        const gridItems = document.querySelectorAll('.grid-item');
     
-        // Enable only the logout button
-        const logoutButton = document.querySelector('.twitter-login');
-        if (logoutButton) {
-            logoutButton.style.pointerEvents = 'auto';
-        }
-    } else {
+        gridItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const gridId = this.getAttribute('data-id');
+                checkGrid(gridId);
+            });
+        });
+        
+        const userWalletAddress = document.getElementById('userWalletAddress');
+        
+       /*if (userWalletAddress && userWalletAddress.textContent) {
+            // Display the SweetAlert message
+            Swal.fire({
+                title: 'Whitelisted!',
+                html: `
+                    You've already found your spot! Make sure to follow EV3 or join discord to get updates! 
+                    Your wallet address is: <br><br> <strong>${userWalletAddress.textContent}</strong>
+                    <br><br>
+                    
+                `,
+                icon: 'info',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                showConfirmButton: false
+            })
+        
+            // Fade out the main container
+            const mainContainer = document.querySelector('.main-container');
+            mainContainer.style.opacity = '0.5';
+            mainContainer.style.pointerEvents = 'none'; // Disable all interactions
+        
+            // Enable only the logout button
+            const logoutButton = document.querySelector('.twitter-login');
+            if (logoutButton) {
+                logoutButton.style.pointerEvents = 'auto';
+            }
+        } else {*/
         const npcContainer = document.getElementById('npcContainer');
         const closeNpcButton = document.getElementById('closeNpc');
         const mainContainer = document.querySelector('.main-container');
+        //const userWinStatus = await checkUserWinStatus(window.userId);
     
         // Initially, disable the main content
         mainContainer.style.opacity = '0.2';
@@ -110,25 +86,77 @@ document.addEventListener('DOMContentLoaded', function () {
     
         // Check if userId exists (i.e., the user is authenticated)
         if (window.userId) {
-            if (window.userId == 4) {
-                const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-                if (randomNumber <= 90) {
-                    showBoat();
-                }
+            let shouldShowBoat = false;
+        
+            const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
+            
+            if (randomNumber <= 10) {
+                shouldShowBoat = true;
+            }
+        
+            if (shouldShowBoat) {
+                showBoat();
             } else {
-                const randomNumber = Math.floor(Math.random() * 100) + 1; // This will give a number between 1 and 100
-                if (randomNumber <= 10) {
-                    showBoat();
-                }
+                //if (!userWinStatus) {
+                    // Display the password button
+                    document.getElementById('passwordButton').style.display = 'block';
+                //}
             }
         }
 
-        
         bubbleClicked();
-    }
-    
-    
 });
+
+document.getElementById('passwordButton').addEventListener('click', function() {
+    const correctPassword = document.querySelector('.main-container').getAttribute('data-password');
+
+    Swal.fire({
+        title: 'Special Reward Code',
+        input: 'password',
+        inputPlaceholder: '03******63',
+        showCancelButton: true,
+        confirmButtonText: 'Submit',
+        confirmButtonColor: '#f53636',
+        background: 'black',
+        customClass: {
+            title: 'custom-title-color',
+            htmlContainer: 'custom-text-color',
+        },
+        preConfirm: (password) => {
+            Swal.showLoading(); // Show the loader manually
+            return new Promise((resolve, reject) => {
+                setTimeout(() => { // Simulate async operation
+                    if (password === correctPassword) {
+                        showBoat();
+                        document.getElementById('passwordButton').style.display = 'none'; // Hide the password button
+                        resolve();
+                    } else {
+                        Swal.hideLoading(); // Hide the loader manually
+                        Swal.showValidationMessage('Incorrect "music" code, find the code somewhere "behind" the island. Or ask for community help, code change everyday');
+                        reject();
+                    }
+                }, 1000); // Simulate a delay of 1 second
+            });
+        }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            Swal.fire({
+                confirmButtonColor: '#f53636',
+                background: 'black',
+                customClass: {
+                    title: 'custom-title-color',
+                    htmlContainer: 'custom-text-color',
+                },
+                icon: 'success',
+                title: 'Success!',
+                text: 'Something has appeared on the map!'
+            });
+        }
+    });
+});
+
+
+
 
 
 function checkGrid(gridId) {
@@ -139,7 +167,11 @@ function checkGrid(gridId) {
     let winSound = new Audio('/img/win.wav');
     let coinSound = new Audio('/img/coin.wav');
 
-    axios.post('/checkGrid', { id: gridId })
+    axios.post('/checkGrid', { 
+        id: gridId,
+        hasWalletAddress: !!document.getElementById('userWalletAddress').textContent
+    })
+
     .then(response => {
         if (response.data.message !== 'limit' && response.data.message !== 'shared' && response.data.message !== 'repeat') {
             gridElement.classList.add('clicked');
@@ -190,6 +222,11 @@ function checkGrid(gridId) {
             let swalConfig = {
                 title: 'EV3',
                 showConfirmButton: false,
+                background: 'black',
+                customClass: {
+                    title: 'custom-title-color',
+                    //htmlContainer: 'custom-text-color',
+                },
                 html: `
                     You have reached your click limit for today. Help us to share out the fun!
                     <br><br>
@@ -202,55 +239,71 @@ function checkGrid(gridId) {
         }
         
         if (response.data.message === 'reward') {
-            const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
-            gridElement.classList.add('reward-found');
-            remainingClicks--;
-            remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
-            winSound.play();
-        
-            let swalConfig = {
-                title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
-                input: 'text',
-                inputPlaceholder: 'Enter your wallet address',
-                showCancelButton: true,
-                confirmButtonText: 'Submit',
-                allowOutsideClick: false,
-                showLoaderOnConfirm: true,
-                preConfirm: (walletAddress) => {
-                    return axios.post('/wallet', { wallet_address: walletAddress })
-                        .then(response => {
-                            if (!response.data.success) {
-                                throw new Error(response.data.message);
-                            }
-                            return response.data;
-                        })
-                        .catch(error => {
-                            Swal.showValidationMessage(`Request failed: ${error}`);
+            const userWalletAddress = document.getElementById('userWalletAddress');
+            
+            if (userWalletAddress && userWalletAddress.textContent) {
+                Swal.fire({
+                    title: 'Whitelisted!',
+                    html: `
+                        You've already found your spot! Make sure to follow EV3 or join discord to get updates! 
+                        Your wallet address is: <br><br> <strong>${userWalletAddress.textContent}</strong>
+                        <br><br>
+                        
+                    `,
+                    icon: 'info',
+                    showConfirmButton: true
+                })
+            } else {
+                const twitterShareUrl = `https://twitter.com/intent/tweet?text=I%20found%20my%20spot%20on%20EV3%20hunting!!%20%23EV3%20%23BLUECODE&url=https://hunt.ev3nft.xyz/`;
+                gridElement.classList.add('reward-found');
+                remainingClicks--;
+                remainingClicksDiv.innerHTML = `You have ${remainingClicks} clicks left for today.`;
+                winSound.play();
+            
+                let swalConfig = {
+                    title: 'Congratulations! You found a reward! Please bind your wallet address to secure your whitelist spot!',
+                    input: 'text',
+                    inputPlaceholder: 'Enter your wallet address',
+                    showCancelButton: true,
+                    confirmButtonText: 'Submit',
+                    allowOutsideClick: false,
+                    showLoaderOnConfirm: true,
+                    preConfirm: (walletAddress) => {
+                        return axios.post('/wallet', { wallet_address: walletAddress })
+                            .then(response => {
+                                if (!response.data.success) {
+                                    throw new Error(response.data.message);
+                                }
+                                return response.data;
+                            })
+                            .catch(error => {
+                                Swal.showValidationMessage(`Request failed: ${error}`);
+                            });
+                    },
+                    allowOutsideClick: () => !Swal.isLoading()
+                };
+            
+                Swal.fire(swalConfig).then((result) => {
+                    if (result.value) {
+                        Swal.fire({
+                            title: 'Saved!',
+                            text: 'Your wallet address has been saved.',
+                            icon: 'success',
+                            showConfirmButton: false,
+                            html: `
+                                <br><br>
+                                <a href="${twitterShareUrl}" target="_blank">
+                                    <button class="swal2-confirm swal2-styled" style="background-color: black;">Share on Twitter</button>
+                                </a>`
+                        }).then(() => {
+                            // Disable clicks on the main container after the wallet address has been saved
+                            const mainContainer = document.querySelector('.main-container');
+                            mainContainer.style.opacity = '0.5';
+                            mainContainer.style.pointerEvents = 'none'; // Disable all interactions
                         });
-                },
-                allowOutsideClick: () => !Swal.isLoading()
-            };
-        
-            Swal.fire(swalConfig).then((result) => {
-                if (result.value) {
-                    Swal.fire({
-                        title: 'Saved!',
-                        text: 'Your wallet address has been saved.',
-                        icon: 'success',
-                        showConfirmButton: false,
-                        html: `
-                            <br><br>
-                            <a href="${twitterShareUrl}" target="_blank">
-                                <button class="swal2-confirm swal2-styled" style="background-color: black;">Share on Twitter</button>
-                            </a>`
-                    }).then(() => {
-                        // Disable clicks on the main container after the wallet address has been saved
-                        const mainContainer = document.querySelector('.main-container');
-                        mainContainer.style.opacity = '0.5';
-                        mainContainer.style.pointerEvents = 'none'; // Disable all interactions
-                    });
-                }
-            });
+                    }
+                });
+            }
         }
         
         if (response.data.message === 'cash') {
@@ -338,6 +391,9 @@ function moveBoat() {
 }
 
 function updateBoatPosition() {
+    //const isMobile = window.innerWidth <= 768; // You can adjust this value based on your mobile breakpoint
+    //const boatElementId = isMobile ? 'boat-mobile' : 'boat-desktop';
+    //const boatElement = document.getElementById(boatElementId);
     const boatElement = document.getElementById('boat');
     const gridSize = 20; // Assuming each grid item is 20px by 20px
 
@@ -375,12 +431,12 @@ async function boatClicked() {
     let winSound = new Audio('/img/win.wav');
     let rewardReceived = false; 
     
-     const userWinStatus = await checkUserWinStatus(window.userId);
+    const userWinStatus = await checkUserWinStatus(window.userId);
     
     if (userWinStatus && userWinStatus.alreadyWon) {
-        message = 'Good luck man, but you already registered in the database, so no reward this time.';
+        message = 'Your ID is already registered in the database, and we will notice you on game day.';
         icon = 'info';
-    } else if (rewardChance < 30) {
+    } else if (rewardChance < 99) {
         message = 'Congratulations! You found a special reward! You have secured a ticket for the grand raffle, granting you a chance to win any of the items listed above! We have noted your entry. You dont need to do anything further for now. Continue your search for the whitelist!';
         icon = 'success';
         imageUrl = '/img/special2.png';
