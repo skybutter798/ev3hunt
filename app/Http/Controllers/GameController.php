@@ -35,9 +35,22 @@ class GameController extends Controller
                 $remainingClicks = 2 - $todayClicks;
             }
         }
-    
+        $userCriteriaFulfilled = false;
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $grid = Grid::where('user_id', $user->id)
+                        ->where('clicked', 1)
+                        ->where('reward_item_id', 2)
+                        ->first();
+        
+            if ($grid) {
+                $userCriteriaFulfilled = true;
+            }
+        }
+        
         $grids = Grid::all();
-        return view('grid', compact('grids', 'remainingClicks', 'remain', 'password'));
+        return view('grid', compact('grids', 'remainingClicks', 'remain', 'password','userCriteriaFulfilled'));
     }
     
     public function beta()
@@ -218,4 +231,62 @@ class GameController extends Controller
     
         return response()->json(['success' => true, 'message' => 'Watercave status updated successfully']);
     }
+    
+    public function getClickedUsers() {
+        $grids = \App\Models\Grid::where('clicked', 1)
+                     ->where('reward_item_id', 1)
+                     ->with('user')
+                     ->get();
+    
+        foreach ($grids as $grid) {
+            $userName = $grid->user ? $grid->user->name : 'NULL';
+            //Log::info('Grid ID: ' . $grid->id . ' - User Name: ' . $userName);
+        }
+    
+        return response()->json($grids->pluck('user'));
+    }
+    
+    public function getRewardUsers() {
+        $rewardUsers = \App\Models\Reward::with('user')->get();
+    
+        $users = [];
+        foreach ($rewardUsers as $reward) {
+            $users[] = [
+                'name' => $reward->user ? $reward->user->name : 'NULL',
+                'wallet_address' => $reward->user && $reward->user->wallet_address ? $reward->user->wallet_address : 'Not Provided'
+            ];
+        }
+    
+        return response()->json($users);
+    }
+
+
+    
+    
+    
+    public function checkUserForPopout() {
+        $user = Auth::user();
+    
+        if (!$user) {
+            return response()->json(['showPopout' => false]);
+        }
+    
+        $grid = Grid::where('user_id', $user->id)
+                    ->where('clicked', 1)
+                    ->where('reward_item_id', 2)
+                    ->first();
+
+        if ($grid) {
+            return response()->json([
+                'showPopout' => true,
+                'hasWalletAddress' => !empty($user->wallet_address),
+                'walletAddress' => $user->wallet_address
+            ]);
+        }
+    
+        return response()->json(['showPopout' => false]);
+    }
+    
+    
+
 }

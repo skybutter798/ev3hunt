@@ -15,3 +15,4 @@
 [10-Oct-2023 14:56:38 Asia/Kuala_Lumpur] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 2240512 bytes) in /home/ev3nft/hunt/vendor/spatie/ignition/resources/views/errorPage.php on line 61
 [13-Oct-2023 11:46:15 Asia/Kuala_Lumpur] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 2228224 bytes) in /home/ev3nft/hunt/vendor/spatie/ignition/resources/views/errorPage.php on line 61
 [14-Oct-2023 10:12:03 Asia/Kuala_Lumpur] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 2232320 bytes) in /home/ev3nft/hunt/vendor/spatie/ignition/resources/views/errorPage.php on line 61
+[15-Oct-2023 09:54:44 Asia/Kuala_Lumpur] PHP Fatal error:  Allowed memory size of 33554432 bytes exhausted (tried to allocate 2379776 bytes) in /home/ev3nft/hunt/vendor/spatie/ignition/resources/views/errorPage.php on line 61

@@ -15,14 +15,14 @@ return [
     ],
 
     'grid_item' => [
-        'background_color' => 'rgba(255,255,255,0.2)',
-        'hover_background_color' => 'rgba(0,0,0,0.3)',
+        'background_color' => 'rgba(255,255,255,0.0)',
+        'hover_background_color' => 'rgba(0,0,0,0.1)',
         'clicked_background_color' => 'rgba(0,0,0,0.1)',
         'border_color' => '#000',
     ],
     
     'grid_container' => [
-        'background_image' => 'night_island_2.png',
+        'background_image' => 'night_island_4.png',
         'background_image_left' => 'quest_island_2d.png',
     ],
     

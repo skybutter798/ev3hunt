@@ -20,3 +20,6 @@ Route::get('/checkWinStatus', [GameController::class, 'checkWinStatus']);
 //Route::get('/watercave', [GameController::class, 'watercave']);
 //Route::post('/update-watercave', [GameController::class, 'updateWatercave']);
 //Route::get('/WATERCAVE', function() {return redirect('/watercave');});
+Route::get('/clicked-users', [GameController::class, 'getClickedUsers']);
+Route::get('/cash', [GameController::class, 'checkUserForPopout']);
+Route::get('/reward-users', [GameController::class, 'getRewardUsers']);

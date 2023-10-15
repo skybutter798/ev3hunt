@@ -25,10 +25,21 @@
         Your browser does not support the audio element.
     </audio>
 
-    <div class="title-container" style="margin-top:120px">
+    <div class="title-container" style="margin-top:150px">
         <h1>EV3 - Blue Code</h1>
         @if(Auth::check())
             <span style="color:white">Welcome, {{ Auth::user()->name }}</span>
+            
+            @if(Auth::check() && Auth::user()->share == 1)
+                <div id="remainingClicksDiv" style="color:white; margin-right: 10px;">
+                    You have 1 click left for today.
+                </div>
+            @else
+                <div id="remainingClicksDiv" style="color:white; margin-right: 10px;">
+                    You have {{ $remainingClicks }} clicks left for today.
+                </div>
+            @endif
+            
             <span id="userWalletAddress" style="display: none;">{{ Auth::user()->wallet_address }}</span>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
@@ -39,22 +50,15 @@
         @endif
  
         <div style="display: flex; align-items: center;">
-            @if(Auth::check() && Auth::user()->share == 1)
-                <div id="remainingClicksDiv" style="color:white; margin-right: 10px;">
-                    You have 1 click left for today.
-                </div>
-            @else
-                <div id="remainingClicksDiv" style="color:white; margin-right: 10px;">
-                    You have {{ $remainingClicks }} clicks left for today.
-                </div>
-            @endif
             <button id="bubble" onclick="bubbleClicked()" class="play-sound" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Info</button>
             <button id="playMusicButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Music</button>
             <button id="muteButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin; display:none">Mute</button>
-            <button style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Whitelist available : {{ count($remain) }}</button>
+            
             <button style="background-color: #2778c4; color: white; border: solid; border-width: thin;" id="passwordButton" style="display: none;">Hint</button>
-
-
+            <button id="userRewardButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;" onclick="showRewardUsers()">Special Prize Hall</button>
+            <button id="userListButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;" onclick="showClickedUsers()">Whitelist Hall</button>
+            @if(Auth::check() && $userCriteriaFulfilled)<button id="walletPopoutButton" style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Cash Wallet</button>@endif
+            <button style="background-color: #2778c4; color: white; border: solid; border-width: thin;">Whitelist available : {{ count($remain) }}</button>
         </div>
     </div>
 

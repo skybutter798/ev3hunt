@@ -166,6 +166,10 @@ h3 {
     color: white !important; 
 }
 
+.custom-text-font {
+    font-size: small !important; 
+}
+
 .custom-title-color {
     color: #2798f3 !important; 
 }

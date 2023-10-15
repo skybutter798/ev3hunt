@@ -35,44 +35,16 @@ document.addEventListener('DOMContentLoaded', function () {
         gridItems.forEach(item => {
             item.addEventListener('click', function() {
                 const gridId = this.getAttribute('data-id');
+                console.log(gridId);
                 checkGrid(gridId);
             });
         });
         
         const userWalletAddress = document.getElementById('userWalletAddress');
-        
-       /*if (userWalletAddress && userWalletAddress.textContent) {
-            // Display the SweetAlert message
-            Swal.fire({
-                title: 'Whitelisted!',
-                html: `
-                    You've already found your spot! Make sure to follow EV3 or join discord to get updates! 
-                    Your wallet address is: <br><br> <strong>${userWalletAddress.textContent}</strong>
-                    <br><br>
-                    
-                `,
-                icon: 'info',
-                allowOutsideClick: false,
-                allowEscapeKey: false,
-                showConfirmButton: false
-            })
-        
-            // Fade out the main container
-            const mainContainer = document.querySelector('.main-container');
-            mainContainer.style.opacity = '0.5';
-            mainContainer.style.pointerEvents = 'none'; // Disable all interactions
-        
-            // Enable only the logout button
-            const logoutButton = document.querySelector('.twitter-login');
-            if (logoutButton) {
-                logoutButton.style.pointerEvents = 'auto';
-            }
-        } else {*/
         const npcContainer = document.getElementById('npcContainer');
         const closeNpcButton = document.getElementById('closeNpc');
         const mainContainer = document.querySelector('.main-container');
-        //const userWinStatus = await checkUserWinStatus(window.userId);
-    
+
         // Initially, disable the main content
         mainContainer.style.opacity = '0.2';
         mainContainer.style.pointerEvents = 'none';
@@ -675,6 +647,168 @@ function fourthMessage() {
         }
     });
 }
+
+function showClickedUsers() {
+    axios.get('/clicked-users')
+    .then(response => {
+        const users = response.data;
+        let userList = '<table style="width:100%; border-collapse: collapse;">';
+        userList += '<thead><tr><th style="border: 1px solid #575757; padding: 8px;">Name</th><th style="border: 1px solid #575757; padding: 8px;">Wallet Address</th></tr></thead><tbody>';
+        
+        users.forEach(user => {
+            const userName = user ? user.name : 'NULL';
+            const userWalletAddress = user && user.wallet_address ? user.wallet_address : 'NULL';
+
+            userList += '<tr>';
+            userList += '<td style="border: 1px solid #575757; padding: 8px;">' + userName + '</td>';
+            userList += '<td style="border: 1px solid #575757; padding: 8px;">' + userWalletAddress + '</td>';
+            userList += '</tr>';
+        });
+        
+        userList += '</tbody></table>';
+
+        Swal.fire({
+            confirmButtonText: 'Ahoy!',
+            confirmButtonColor: '#f53636',
+            background: 'black',
+            customClass: {
+                title: 'custom-title-color',
+                htmlContainer: 'custom-text-color custom-text-font',
+            },
+            title: 'Whitelisted',
+            html: userList,
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching users:', error);
+    });
+}
+
+function showRewardUsers() {
+    axios.get('/reward-users')
+    .then(response => {
+        const users = response.data;
+        let userList = '<table style="width:100%; border-collapse: collapse;">';
+        userList += '<thead><tr><th style="border: 1px solid #575757; padding: 8px;">Name</th></tr></thead><tbody>';
+        
+        users.forEach(user => {
+            userList += '<tr>';
+            userList += '<td style="border: 1px solid #575757; padding: 8px;">' + user.name + '</td>';
+            userList += '</tr>';
+        });
+        
+        userList += '</tbody></table>';
+
+        Swal.fire({
+            confirmButtonText: 'Ahoy!',
+            confirmButtonColor: '#f53636',
+            background: 'black',
+            customClass: {
+                title: 'custom-title-color',
+                htmlContainer: 'custom-text-color custom-text-font',
+            },
+            title: 'Special Prize Hall',
+            html: userList,
+        });
+    })
+    .catch(error => {
+        console.error('Error fetching reward users:', error);
+    });
+}
+
+
+const walletPopoutButton = document.getElementById('walletPopoutButton');
+if (walletPopoutButton) {
+    walletPopoutButton.addEventListener('click', function() {
+        checkUserForPopout();
+    });
+}
+
+function checkUserForPopout() {
+    axios.get('/cash')
+    .then(response => {
+        if (response.data.showPopout) {
+            if (response.data.hasWalletAddress) {
+                Swal.fire({
+                    title: 'Your Wallet Address',
+                    text: response.data.walletAddress,
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#f53636',
+                    background: 'black',
+                    customClass: {
+                        title: 'custom-title-color',
+                        htmlContainer: 'custom-text-color',
+                    },
+                });
+            } else {
+                // Show popout to input wallet address
+                Swal.fire({
+                    title: 'ERC20 Wallet Address',
+                    input: 'text',
+                    inputPlaceholder: 'Enter your wallet address for $5',
+                    confirmButtonText: 'Submit',
+                    confirmButtonColor: '#f53636',
+                    background: 'black',
+                    customClass: {
+                        title: 'custom-title-color',
+                        htmlContainer: 'custom-text-color',
+                    },
+                    showCancelButton: true,
+
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        axios.post('/wallet', {
+                            wallet_address: result.value
+                        }).then(response => {
+                            // Handle success
+                            Swal.fire({
+                                confirmButtonText: 'OK',
+                                confirmButtonColor: '#f53636',
+                                background: 'black',
+                                customClass: {
+                                    title: 'custom-title-color',
+                                    htmlContainer: 'custom-text-color',
+                                },
+                                icon: 'success',
+                                title: 'Success!',
+                                text: 'Wallet address saved successfully!'
+                            });
+                        }).catch(error => {
+                            if (error.response && error.response.data) {
+                                Swal.fire({
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#f53636',
+                                    background: 'black',
+                                    customClass: {
+                                        title: 'custom-title-color',
+                                        htmlContainer: 'custom-text-color',
+                                    },
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: error.response.data.message || 'Something went wrong!'
+                                });
+                            } else {
+                                Swal.fire({
+                                    confirmButtonText: 'OK',
+                                    confirmButtonColor: '#f53636',
+                                    background: 'black',
+                                    customClass: {
+                                        title: 'custom-title-color',
+                                        htmlContainer: 'custom-text-color',
+                                    },
+                                    icon: 'error',
+                                    title: 'Oops...',
+                                    text: 'Something went wrong!'
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        }
+    });
+}
+
 
 window.onload = function () {
   var countEL = document.getElementById("count");
